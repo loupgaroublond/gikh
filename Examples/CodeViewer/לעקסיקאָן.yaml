@@ -1,0 +1,47 @@
+tier: project
+
+identifiers:
+  # App structure
+  קאָד_קוקער_אַפּ: CodeViewerApp
+  קאָד_קוקער: CodeViewer
+  הויפּט_בליק: MainView
+
+  # File system model
+  טעקע_פּונקט: FileItem
+  טעקע_נאָמען: fileName
+  טעקע_וועג: filePath
+  איז_מאַפּע: isDirectory
+  קינדער: children
+  אינהאַלט: content
+  לאָדן_קינדער: loadChildren
+  לאָדן_אינהאַלט: loadContent
+  איז_גיך_טעקע: isGikhFile
+
+  # File browser
+  טעקעס_בלעטערער: FileBrowser
+  וואָרצל_מאַפּע: rootDirectory
+  אויסגעקליבענע_טעקע: selectedFile
+  עפֿענע_טעקעס: openFiles
+  צולייגן_טעקע: addFile
+  עפֿענע_מאַפּע: openFolder
+  קלייב_מאַפּע: chooseFolder
+
+  # Code display
+  קאָד_בליק: CodeView
+  טעקע: file
+  קאָד_אינהאַלט: codeContent
+  שורה_נומער: lineNumber
+  שורה: line
+  שורות: lines
+
+  # Tab bar
+  טאַב_באַר: TabBar
+  אַקטיווע_טעקע: activeFile
+  שליסן_טעקע: closeFile
+  טאַב_טיטל: tabTitle
+
+  # Editor area
+  רעדאַקטאָר_געגנט: EditorArea
+  ליידיקער_צושטאַנד: EmptyState
+  ליידיק_מעלדונג: emptyMessage
+  קיין_טעקע_אויסגעקליבן: noFileSelected

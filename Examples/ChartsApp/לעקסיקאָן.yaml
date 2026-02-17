@@ -1,0 +1,55 @@
+tier: project
+description: >
+  Project dictionary for the ChartsApp example.
+  Maps Yiddish identifiers to their English Swift equivalents
+  for transpilation between Mode B and Mode C.
+
+# Swift standard library types
+types:
+  סטרינג: String
+  גאַנצצאָל: Int
+  זיכבאַשטימט: Identifiable
+
+# SwiftUI framework
+swiftui:
+  בליק: View
+  גוף: body
+  סצענע: Scene
+  אַפּ: App
+  פֿענצטער_גרופּע: WindowGroup
+  אידענטיפֿיקאַטאָר: id
+  ראַם: frame
+  הייך: height
+  מינימאַלע_ברייט: minWidth
+  מינימאַלע_הייך: minHeight
+  פּאַדירונג: padding
+  נאַוויגאַציע_טיטל: navigationTitle
+  פֿאָרגרונד_סטיל: foregroundStyle
+  כחול: blue
+
+# Swift Charts framework
+charts:
+  דיאַגראַם: Chart
+  באַלקן_סימן: BarMark
+  איקס: x
+  וואי: y
+  ווערט: value
+  דיאַגראַם_איקס_אַקס_עטיקעט: chartXAxisLabel
+  דיאַגראַם_וואי_אַקס_עטיקעט: chartYAxisLabel
+  גראַדיענט: gradient
+  עק_ראַדיוס: cornerRadius
+
+# Swift language constructs
+constructs:
+  פֿאַר_יעדן: ForEach
+  פּונקט: item
+
+# Data model identifiers
+model:
+  חודש_פֿאַרקויף: MonthSales
+  חודש: month
+  פֿאַרקויף: sales
+  פֿאַרקויפֿס_דאַטן: salesData
+  פֿאַרקויפֿס_דיאַגראַם: SalesChart
+  דיאַגראַמען_אַפּ: ChartsApp
+  הויפּט: main
