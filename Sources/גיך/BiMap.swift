@@ -2,7 +2,7 @@
 ///
 /// Both `toValue` and `toKey` are O(1) average case because the reverse mapping
 /// is maintained alongside the forward mapping.
-struct BiMap<Key: Hashable, Value: Hashable> {
+struct BiMap<Key: Hashable & Sendable, Value: Hashable & Sendable>: Sendable {
     private var forward: [Key: Value]
     private var reverse: [Value: Key]
 
@@ -47,4 +47,10 @@ struct BiMap<Key: Hashable, Value: Hashable> {
 
     /// Looks up the key associated with `value`.
     func toKey(_ value: Value) -> Key? { reverse[value] }
+
+    /// All (key, value) pairs in the map.
+    var allPairs: [(Key, Value)] { Array(forward) }
+
+    /// The number of entries in the map.
+    var count: Int { forward.count }
 }

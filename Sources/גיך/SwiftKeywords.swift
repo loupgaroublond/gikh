@@ -71,4 +71,10 @@ enum SwiftKeywords {
         for k in yiddishToEnglish.keys { s.insert(k) }
         return s
     }()
+
+    /// A BiMap from Yiddish keyword → English keyword.
+    /// Used by Lexicon and Translator.
+    static let keywordsMap: BiMap<String, String> = {
+        BiMap(Array(yiddishToEnglish))
+    }()
 }
