@@ -1,0 +1,128 @@
+# Dictionary 1: Swift Keyword Translations
+#
+# Maps every Swift keyword and attribute to its Yiddish equivalent.
+# This dictionary is compiled directly into the transpiler binary.
+# Changes only when Swift adds new keywords.
+#
+# Format: Yiddish: English
+# The Yiddish term is the key (Mode B), English is the value (Mode C/A).
+#
+# All translations have been approved per the translation approval workflow.
+
+keywords:
+  # ── Declarations ──────────────────────────────────────────────────────────
+  פֿונקציע: func
+  לאָז: let
+  באַשטימען: var
+  סטרוקטור: struct
+  קלאַס: class
+  פּראָטאָקאָל: protocol
+  ענום: enum
+  פֿאַרלענגערונג: extension
+  אימפּאָרט: import
+  פּראָטאָקאָל_טיפּ: associatedtype
+  אָנהייב: init
+  אָפּרוים: deinit
+  אינאױס: inout
+  אָפּעראַטאָר: operator
+  פֿאָרגאַנג_גרופּע: precedencegroup
+  אונטערשריפֿט: subscript
+  טיפּ_נאָמען: typealias
+  עפֿנטלעך: public
+  פּריוואַט: private
+  אינערלעך: internal
+  פֿאַרשלאָסן_פּריוואַט: fileprivate
+  עפֿן: open
+  סטאַטיש: static
+  ווידערוואַרפֿן: rethrows
+
+  # ── Statements ────────────────────────────────────────────────────────────
+  צוריק: return
+  אויב: if
+  אַנדערש: else
+  פֿאַר: for
+  אין: in
+  בשעת: while
+  וועקסל: switch
+  פֿאַל: case
+  ברעכן: break
+  ממשיכן: continue
+  פֿאָלגן: fallthrough
+  פֿאַרזיכערן: guard
+  אָפּשטעלן: defer
+  טאָן: do
+  כאַפּן: catch
+  וואַרפֿן: throw
+  פּרובירן: try
+  ווו: where
+  חזרן: repeat
+  פֿאָרשטיין: default
+
+  # ── Expressions and Types ─────────────────────────────────────────────────
+  וואָס_נאָר: Any
+  ווי: as
+  פֿאַלש: false
+  איז: is
+  גאָרנישט: nil
+  זיך: self
+  זיך_טיפּ: Self
+  עלטערן: super
+  וואַרפֿט: throws
+  אמת: true
+  אַסינכראָן: async
+  וואַרטן: await
+
+  # ── Contextual Keywords ───────────────────────────────────────────────────
+  פֿאַראיינציקייט: associativity
+  באַקוועם: convenience
+  דינאַמיש: dynamic
+  נאָך_שטעלן: didSet
+  סופֿיק: final
+  נעמען: get
+  אינפֿיקס: infix
+  אומגעריכט: indirect
+  פּויזנדיק: lazy
+  לינקס: left
+  ענדערן: mutating
+  קיינעם: none
+  ניט_ענדערן: nonmutating
+  אָפּציאָנעל: optional
+  איבערשרײַבן: override
+  נאָכשטיין: postfix
+  פֿאָרגאַנג: precedence
+  פֿאָרשטיין_וואָרט: prefix
+  פֿאַרלאַנגט: required
+  רעכטס: right
+  שטעלן: set
+  עטלעכע: some
+  עפּעס: any
+  טיפּ: Type
+  אומבאַזעסן: unowned
+  שוואַך: weak
+  פֿאַר_שטעלן: willSet
+  אַקטיאָר: actor
+  ניט_איזאָלירט: nonisolated
+  איזאָלירט: isolated
+  פֿאַרנוצן: consuming
+  אויסלייען: borrowing
+  שיקן: sending
+  מאַקראָ: macro
+
+  # ── Attributes (without @) ────────────────────────────────────────────────
+  דערלויבט: available
+  אָפּוואַרפֿבאַר: discardableResult
+  דינאַמיש_אָנרוף: dynamicCallable
+  דינאַמיש_מיטגליד: dynamicMemberLookup
+  אַנטלויפֿנדיק: escaping
+  פֿאַרפֿרוירן: frozen
+  אַרײַנשרײַבן: inlinable
+  הויפּט: main
+  ניט_אָביעקט: nonobjc
+  אָביעקט: objc
+  אָביעקט_מיטגלידער: objcMembers
+  פּראָפּערטי_אײַנוויקלער: propertyWrapper
+  רעזולטאַט_בויער: resultBuilder
+  שיקבאַר: Sendable
+  פּרובירבאַר: testable
+  באַניצבאַר_פֿון_אינעם: usableFromInline
+  הויפּט_אַקטיאָר: MainActor
