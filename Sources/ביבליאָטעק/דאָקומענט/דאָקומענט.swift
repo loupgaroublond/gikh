@@ -10,7 +10,7 @@ public typealias גליד_בליק = NSOutlineView
 public typealias טעקסט_בליק = NSTextView
 public typealias בלעטל_בליק = NSScrollView
 public typealias טאַבעלע_בליק = NSTableView
-public typealias בליק = NSView
+public typealias אַפּק_בליק = NSView
 public typealias פֿענצטער = NSWindow
 public typealias בליק_קאָנטראָלער = NSViewController
 
