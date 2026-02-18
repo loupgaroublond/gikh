@@ -1,0 +1,10 @@
+import ביבליאָטעק
+import AppKit
+
+// ראשי.gikh — הויפּט-אַרײַנגאַנג פֿאַר דעם קאָד-בליקער
+// Main entry point for the Code Viewer application.
+
+let אַפּ = אַפּליקאַציע.shared
+let דעלעגאַט = אַפּליקאַציע_דעלעגאַט_קלאַס()
+אַפּ.delegate = דעלעגאַט
+אַפּ.run()

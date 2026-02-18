@@ -1,0 +1,44 @@
+import ביבליאָטעק
+import AppKit
+
+// אַפּליקאַציע_דעלעגאַט.gikh — אַפּליקאַציע-דעלעגאַט
+// Registers document types and creates the initial window.
+
+class אַפּליקאַציע_דעלעגאַט_קלאַס: NSObject, אַפּליקאַציע_דעלעגאַט {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // שאַפֿן דעם הויפּטמעניו
+        let מעניו_שטאַנגע = NSMenu()
+
+        let אַפּ_מעניו_אינטעם = NSMenuItem()
+        מעניו_שטאַנגע.addItem(אַפּ_מעניו_אינטעם)
+        let אַפּ_מעניו = NSMenu(title: "קאָד-בליקער")
+        אַפּ_מעניו_אינטעם.submenu = אַפּ_מעניו
+        אַפּ_מעניו.addItem(NSMenuItem(title: "וועגן קאָד-בליקער", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: ""))
+        אַפּ_מעניו.addItem(NSMenuItem.separator())
+        אַפּ_מעניו.addItem(NSMenuItem(title: "פֿאַרמאַכן", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+
+        let טעקע_מעניו_אינטעם = NSMenuItem()
+        מעניו_שטאַנגע.addItem(טעקע_מעניו_אינטעם)
+        let טעקע_מעניו = NSMenu(title: "טעקע")
+        טעקע_מעניו_אינטעם.submenu = טעקע_מעניו
+        טעקע_מעניו.addItem(NSMenuItem(title: "עפֿענען…", action: #selector(NSDocumentController.openDocument(_:)), keyEquivalent: "o"))
+        טעקע_מעניו.addItem(NSMenuItem(title: "פֿאַרמאַכן פֿענצטער", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w"))
+
+        let פֿענצטער_מעניו_אינטעם = NSMenuItem()
+        מעניו_שטאַנגע.addItem(פֿענצטער_מעניו_אינטעם)
+        let פֿענצטער_מעניו = NSMenu(title: "פֿענצטער")
+        פֿענצטער_מעניו_אינטעם.submenu = פֿענצטער_מעניו
+        פֿענצטער_מעניו.addItem(NSMenuItem(title: "מינימאַליזירן", action: #selector(NSWindow.miniaturize(_:)), keyEquivalent: "m"))
+        פֿענצטער_מעניו.addItem(NSMenuItem(title: "פֿאַרגרעסערן", action: #selector(NSWindow.zoom(_:)), keyEquivalent: ""))
+
+        אַפּליקאַציע.shared.mainMenu = מעניו_שטאַנגע
+    }
+
+    func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> Bool {
+        return false
+    }
+
+    func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
+        return true
+    }
+}

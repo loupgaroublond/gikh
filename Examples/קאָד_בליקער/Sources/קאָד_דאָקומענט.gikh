@@ -1,0 +1,30 @@
+import ביבליאָטעק
+import AppKit
+
+// קאָד_דאָקומענט.gikh — NSDocument אונטערקלאַס פֿאַר .gikh טעקעס
+// Document class: reads .gikh files and stores content as string.
+
+class קאָד_דאָקומענט_קלאַס: דאָקומענט {
+    var קאָד_אינהאַלט: String = ""
+
+    override class var autosavesInPlace: Bool {
+        return false
+    }
+
+    override func makeWindowControllers() {
+        let הויפּט_קאָנטראָלער = הויפּט_פֿענצטער_קאָנטראָלער_קלאַס(דאָקומענט: self)
+        addWindowController(הויפּט_קאָנטראָלער)
+        הויפּט_קאָנטראָלער.window?.makeKeyAndOrderFront(nil)
+    }
+
+    override func read(from url: URL, ofType typeName: String) throws {
+        קאָד_אינהאַלט = try לייענען_טעקסט(פֿון: url)
+    }
+
+    override func data(ofType typeName: String) throws -> Data {
+        guard let דאַטן = קאָד_אינהאַלט.data(using: .utf8) else {
+            throw NSError(domain: NSCocoaErrorDomain, code: NSFileWriteUnknownError)
+        }
+        return דאַטן
+    }
+}

@@ -1,0 +1,76 @@
+import ביבליאָטעק
+import AppKit
+
+// טיילער_קאָנטראָלער.gikh — טיילער_קאָנטראָלער_קלאַס (NSSplitViewController)
+// Manages the sidebar + content panes and supports adding split panes.
+
+class טיילער_קאָנטראָלער_קלאַס: טיילער_בליק_קאָנטראָלער {
+    private let בוים_קאָנטראָלער = פֿײַל_בוים_קאָנטראָלער()
+    private var קאָד_קאָנטראָלערן: [קאָד_בליק_קאָנטראָלער] = []
+    private var אינהאַלט_טיילער: NSSplitViewController!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        splitView.isVertical = true
+        splitView.dividerStyle = .thin
+
+        // --- זײַטן-שטאַנגע (sidebar) ---
+        let זײַטן_אינטעם = טיילער_בליק_פּונקט.זײַטן_שטאַנגע(בוים_קאָנטראָלער)
+        זײַטן_אינטעם.minimumThickness = 150
+        זײַטן_אינטעם.maximumThickness = 300
+        זײַטן_אינטעם.preferredThicknessFraction = 0.22
+        זײַטן_אינטעם.canCollapse = true
+        addSplitViewItem(זײַטן_אינטעם)
+
+        // --- אינהאַלט-זײַט מיט ערשטן קאָד-בליק ---
+        אינהאַלט_טיילער = NSSplitViewController()
+        אינהאַלט_טיילער.splitView.isVertical = false
+
+        let ערשטער_קאָד_בליק = קאָד_בליק_קאָנטראָלער()
+        קאָד_קאָנטראָלערן.append(ערשטער_קאָד_בליק)
+        ערשטער_קאָד_בליק.ווײַזן_פּלאַצהאַלטער()
+
+        let ערשטער_אינהאַלט_אינטעם = טיילער_בליק_פּונקט.נאָרמאַל(ערשטער_קאָד_בליק)
+        אינהאַלט_טיילער.addSplitViewItem(ערשטער_אינהאַלט_אינטעם)
+
+        let אינהאַלט_אינטעם = טיילער_בליק_פּונקט.אינהאַלט(אינהאַלט_טיילער)
+        addSplitViewItem(אינהאַלט_אינטעם)
+
+        // פֿאַרבינדן טעקע-אויסוואַל מיט קאָד-אָנצייגוונג
+        בוים_קאָנטראָלער.טעקע_אויסגעקליבן = { [weak self] וועג in
+            self?.עפֿענען_טעקע(וועג)
+        }
+    }
+
+    // ווײַזן_קאָד — show code content in the primary pane
+    func ווײַזן_קאָד(_ קאָד: String, טיטל: String) {
+        if let ערשטער = קאָד_קאָנטראָלערן.first {
+            ערשטער.ווײַזן_קאָד(קאָד, טיטל: טיטל)
+        }
+    }
+
+    // עפֿענען_סדר — open a directory in the file tree sidebar
+    func עפֿענען_סדר(_ וועג: URL) {
+        בוים_קאָנטראָלער.לאָדן_סדר(וועג)
+    }
+
+    // עפֿענען_טעקע — read a .gikh file and display it
+    private func עפֿענען_טעקע(_ וועג: URL) {
+        guard let קאָד = try? String(contentsOf: וועג, encoding: .utf8) else { return }
+        let טיטל = וועג.lastPathComponent
+        if let ערשטער = קאָד_קאָנטראָלערן.first {
+            ערשטער.ווײַזן_קאָד(קאָד, טיטל: טיטל)
+        }
+    }
+
+    // צולייגן_פּאַנעל — add a new horizontal split pane (multi-file support)
+    func צולייגן_פּאַנעל() {
+        let נײַער_קאָד_בליק = קאָד_בליק_קאָנטראָלער()
+        קאָד_קאָנטראָלערן.append(נײַער_קאָד_בליק)
+        נײַער_קאָד_בליק.ווײַזן_פּלאַצהאַלטער()
+
+        let נײַער_אינטעם = טיילער_בליק_פּונקט.נאָרמאַל(נײַער_קאָד_בליק)
+        אינהאַלט_טיילער.addSplitViewItem(נײַער_אינטעם)
+    }
+}

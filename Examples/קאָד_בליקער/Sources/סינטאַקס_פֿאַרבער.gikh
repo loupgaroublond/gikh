@@ -1,0 +1,91 @@
+import ביבליאָטעק
+import AppKit
+
+// סינטאַקס_פֿאַרבער.gikh — סינטאַקס_פֿאַרבונג
+// Tokenizes .gikh code: keywords in blue, strings in red, comments in green.
+
+// שליסל_ווערטער — Swift/Gikh keywords to highlight
+let שליסל_ווערטער: Set<String> = [
+    "let", "var", "func", "struct", "class", "enum", "protocol",
+    "import", "if", "else", "for", "while", "return", "guard",
+    "switch", "case", "typealias", "extension", "override",
+    "static", "public", "private", "internal", "open",
+    "init", "deinit", "self", "super", "true", "false", "nil",
+    "throws", "throw", "try", "catch", "defer", "in", "where",
+    "associatedtype", "convenience", "final", "lazy", "mutating",
+    "nonmutating", "optional", "required", "unowned", "weak"
+]
+
+// סינטאַקס_פֿאַרבונג — produces NSMutableAttributedString with syntax colors
+func סינטאַקס_פֿאַרבונג(פֿון קאָד: String) -> באַרעכנבאַרע_צוגעשריבענע_סטרינג {
+    let שריפֿט = NSFont.מאָנאָ_שריפֿט(גרייס: 13)
+    let אויסגאַבע = באַרעכנבאַרע_צוגעשריבענע_סטרינג(
+        string: קאָד,
+        attributes: [
+            .font: שריפֿט,
+            .foregroundColor: NSColor.הויפּט_שריפֿט_פֿאַרב
+        ]
+    )
+
+    let נס_קאָד = קאָד as NSString
+    var אינדעקס = 0
+    let לענג = נס_קאָד.length
+
+    while אינדעקס < לענג {
+        let צייכן = נס_קאָד.character(at: אינדעקס)
+
+        // // באַמערקונג (comment) — גרין
+        if צייכן == 47 && אינדעקס + 1 < לענג && נס_קאָד.character(at: אינדעקס + 1) == 47 {
+            var סוף = אינדעקס
+            while סוף < לענג && נס_קאָד.character(at: סוף) != 10 {
+                סוף += 1
+            }
+            אויסגאַבע.שטעלן_פֿאַרב(.גרין, פֿון: אינדעקס, לענג: סוף - אינדעקס)
+            אינדעקס = סוף
+            continue
+        }
+
+        // סטרינג — רויט (between " ... ")
+        if צייכן == 34 {
+            var סוף = אינדעקס + 1
+            while סוף < לענג {
+                let ס = נס_קאָד.character(at: סוף)
+                if ס == 92 { // backslash escape
+                    סוף += 2
+                    continue
+                }
+                if ס == 34 {
+                    סוף += 1
+                    break
+                }
+                סוף += 1
+            }
+            אויסגאַבע.שטעלן_פֿאַרב(.רויט, פֿון: אינדעקס, לענג: סוף - אינדעקס)
+            אינדעקס = סוף
+            continue
+        }
+
+        // שליסל_וואָרט (keyword) — בלוי
+        // Check if we are at a word boundary (letter/underscore start)
+        let איז_בוכשטאַב_אָנהייב = (צייכן >= 65 && צייכן <= 90) || (צייכן >= 97 && צייכן <= 122) || צייכן == 95
+        if איז_בוכשטאַב_אָנהייב {
+            var ווארט_סוף = אינדעקס + 1
+            while ווארט_סוף < לענג {
+                let ב = נס_קאָד.character(at: ווארט_סוף)
+                let איז_ווארט_צייכן = (ב >= 65 && ב <= 90) || (ב >= 97 && ב <= 122) || (ב >= 48 && ב <= 57) || ב == 95
+                if !איז_ווארט_צייכן { break }
+                ווארט_סוף += 1
+            }
+            let ווארט = נס_קאָד.substring(with: NSRange(location: אינדעקס, length: ווארט_סוף - אינדעקס))
+            if שליסל_ווערטער.contains(ווארט) {
+                אויסגאַבע.שטעלן_פֿאַרב(.בלוי, פֿון: אינדעקס, לענג: ווארט_סוף - אינדעקס)
+            }
+            אינדעקס = ווארט_סוף
+            continue
+        }
+
+        אינדעקס += 1
+    }
+
+    return אויסגאַבע
+}
