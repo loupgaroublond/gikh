@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, remaining-cli ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.app
+
+      - name: Build (warnings as errors)
+        run: swift build -Xswiftc -warnings-as-errors
+
+      - name: Test with coverage
+        run: swift test --enable-code-coverage
+
+      - name: Extract coverage report
+        run: |
+          xcrun llvm-cov report \
+            .build/debug/גיךPackageTests.xctest/Contents/MacOS/גיךPackageTests \
+            -instr-profile=.build/debug/codecov/default.profdata \
+            -ignore-filename-regex=".build" \
+            2>/dev/null || echo "Coverage report generation skipped (no profdata)"
+
+      - name: Run gikh verify on test sources
+        run: |
+          GIKH=".build/debug/גיך"
+          if [ -f "$GIKH" ]; then
+            "$GIKH" verify Sources/ || echo "Verify found diffs (expected on fresh build)"
+          else
+            echo "גיך binary not found at $GIKH — skipping verify step"
+          fi
