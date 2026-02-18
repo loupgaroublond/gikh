@@ -1,0 +1,14 @@
+# Project-specific identifier translations
+# Format: yiddish: english
+identifiers:
+  צעטל_אַפּ: NoteApp
+  אויפֿגאַבע: Task
+  אויפֿגאַבע_רשימה_בליק: TaskListView
+  נײַע_אויפֿגאַבע_בליק: NewTaskView
+  טיטל: title
+  דורכגעפֿירט: completed
+  אויפֿגאַבעס: tasks
+  צייג_נײַע: showNew
+  נײַער_טיטל: newTitle
+  איז_דאָ: isPresented
+  אינדיקסן: indices
