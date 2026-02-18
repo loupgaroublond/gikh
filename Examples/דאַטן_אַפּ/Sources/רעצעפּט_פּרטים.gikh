@@ -1,0 +1,36 @@
+import ביבליאָטעק
+import SwiftUI
+
+struct רעצעפּט_פּרטים: בליק {
+    let רעצעפּט: רעצעפּט
+
+    var body: some בליק {
+        בלעטל {
+            שטאַפּל_וו(alignment: .leading, spacing: 16) {
+                שטאַפּל_וו(alignment: .leading, spacing: 8) {
+                    טעקסט("צוטאַטן")
+                        .שריפֿט(.headline)
+
+                    ForEach(רעצעפּט.צוטאַטן, id: \.self) { צוטאַט in
+                        שטאַפּל_ה(spacing: 8) {
+                            טעקסט("•")
+                            טעקסט(צוטאַט)
+                        }
+                    }
+                }
+
+                טיילער()
+
+                שטאַפּל_וו(alignment: .leading, spacing: 8) {
+                    טעקסט("אָנווײַזונגען")
+                        .שריפֿט(.headline)
+
+                    טעקסט(רעצעפּט.אָנווײַזונגען)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .פּאַדינג()
+        }
+        .בלעטער_טיטל(רעצעפּט.נאָמען)
+    }
+}

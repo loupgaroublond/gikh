@@ -1,0 +1,11 @@
+import ביבליאָטעק
+import SwiftUI
+
+@main
+struct וועטער_אַפּ: App {
+    var body: some Scene {
+        WindowGroup {
+            וועטער_טאָוול()
+        }
+    }
+}
