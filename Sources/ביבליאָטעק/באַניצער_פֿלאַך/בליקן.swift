@@ -16,6 +16,18 @@ public typealias בלעטל = ScrollView
 public typealias פּלאַצהאַלטער = Spacer
 public typealias טיילער = Divider
 
+// MARK: - Iteration / Navigation / Structural
+public typealias פֿאַר_יעדן = ForEach
+public typealias ליידיקע_בליק = EmptyView
+public typealias נאַוויגאַציע_לינק = NavigationLink
+public typealias וואָרקזייג_אינטעם = ToolbarItem
+public typealias וואָרקזייג_פּלאַצירונג = ToolbarItemPlacement
+public typealias פֿענצטער_גרופּע = WindowGroup
+
+// MARK: - App / Scene protocols
+public typealias אַפּליקאַציע_פּראָטאָקאָל = App
+public typealias סצענע = Scene
+
 // MARK: - Form / Section / Controls
 public typealias פֿאָרם = Form
 public typealias אָפּטייל = Section
