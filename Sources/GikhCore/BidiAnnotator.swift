@@ -14,26 +14,28 @@
 ///  - Strip all Unicode BiDi control characters
 ///  - Flip slashes back in operator tokens (if they were flipped for Mode B)
 ///  - All other tokens pass through verbatim
-struct BidiAnnotator {
+public struct BidiAnnotator {
     // MARK: - BiDi control characters
-    static let lri = "\u{2066}"   // Left-to-Right Isolate
-    static let rli = "\u{2067}"   // Right-to-Left Isolate
-    static let fsi = "\u{2068}"   // First Strong Isolate
-    static let pdi = "\u{2069}"   // Pop Directional Isolate
-    static let rlm = "\u{200F}"   // Right-to-Left Mark
-    static let lrm = "\u{200E}"   // Left-to-Right Mark
+    public static let lri = "\u{2066}"   // Left-to-Right Isolate
+    public static let rli = "\u{2067}"   // Right-to-Left Isolate
+    public static let fsi = "\u{2068}"   // First Strong Isolate
+    public static let pdi = "\u{2069}"   // Pop Directional Isolate
+    public static let rlm = "\u{200F}"   // Right-to-Left Mark
+    public static let lrm = "\u{200E}"   // Left-to-Right Mark
 
     /// The set of all BiDi control character scalars to strip in LTR mode.
-    private static let bidiScalars: Set<Unicode.Scalar> = [
+    internal static let bidiScalars: Set<Unicode.Scalar> = [
         "\u{200E}", "\u{200F}",   // LRM, RLM
         "\u{2066}", "\u{2067}", "\u{2068}", "\u{2069}",  // LRI, RLI, FSI, PDI
         "\u{202A}", "\u{202B}", "\u{202C}", "\u{202D}", "\u{202E}",  // LRE, RLE, PDF, LRO, RLO
     ]
 
+    public init() {}
+
     // MARK: - Public entry point
 
     /// Annotate a token stream for the given target mode.
-    func annotate(_ tokens: [Token], target: TargetMode) -> String {
+    public func annotate(_ tokens: [Token], target: TargetMode) -> String {
         switch target {
         case .modeB:
             return emitModeB(tokens)
@@ -165,7 +167,7 @@ struct BidiAnnotator {
 
 // MARK: - Unicode helpers
 
-extension String {
+public extension String {
     /// Returns true if the string contains at least one RTL (right-to-left) character.
     /// This is used to decide whether to wrap in RLI or LRI in Mode B output.
     var containsRTL: Bool {

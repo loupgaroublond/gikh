@@ -10,12 +10,20 @@ let package = Package(
     products: [
         .executable(name: "גיך", targets: ["גיך"]),
         .library(name: "ביבליאָטעק", targets: ["ביבליאָטעק"]),
+        .library(name: "GikhCore", targets: ["GikhCore"]),
     ],
     targets: [
+        // Core transpiler logic — shared between CLI and tests
+        .target(
+            name: "GikhCore",
+            dependencies: ["ביבליאָטעק"],
+            path: "Sources/GikhCore"
+        ),
+
         // CLI transpiler tool
         .executableTarget(
             name: "גיך",
-            dependencies: ["ביבליאָטעק"],
+            dependencies: ["GikhCore", "ביבליאָטעק"],
             path: "Sources/גיך"
         ),
 
@@ -42,13 +50,14 @@ let package = Package(
         // Transpiler tests
         .testTarget(
             name: "GikhTests",
-            dependencies: ["גיך"],
+            dependencies: ["GikhCore"],
             path: "Tests/GikhTests"
         ),
 
         // Scan pipeline tests
         .testTarget(
             name: "ScanPipelineTests",
+            dependencies: ["GikhCore"],
             path: "Tests/ScanPipelineTests"
         ),
     ]

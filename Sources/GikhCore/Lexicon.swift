@@ -9,17 +9,27 @@ import Foundation
 ///
 /// Lookup priority is keywords → bibliotek → identifiers.
 /// Any identifier not found in any tier passes through unchanged.
-struct Lexicon {
-    let keywords: BiMap<String, String>
-    let bibliotek: BiMap<String, String>
-    let identifiers: BiMap<String, String>
+public struct Lexicon {
+    public let keywords: BiMap<String, String>
+    public let bibliotek: BiMap<String, String>
+    public let identifiers: BiMap<String, String>
+
+    public init(
+        keywords: BiMap<String, String>,
+        bibliotek: BiMap<String, String>,
+        identifiers: BiMap<String, String>
+    ) {
+        self.keywords = keywords
+        self.bibliotek = bibliotek
+        self.identifiers = identifiers
+    }
 
     // MARK: - Factory methods
 
     /// Compiler workflow: loads keywords (compiled in) + derives ביבליאָטעק
     /// mappings from source files at `bibliotekPath`.
     /// No project identifiers needed for B → C.
-    static func forCompilation(bibliotekPath: String) throws -> Lexicon {
+    public static func forCompilation(bibliotekPath: String) throws -> Lexicon {
         let bibliotek = try deriveBibliotekMappings(from: bibliotekPath)
         return Lexicon(
             keywords: SwiftKeywords.keywordsMap,
@@ -32,7 +42,7 @@ struct Lexicon {
     /// - keywords (compiled in)
     /// - ביבליאָטעק mappings derived from source files
     /// - project identifiers from `./לעקסיקאָן.yaml`
-    static func forDeveloper(
+    public static func forDeveloper(
         bibliotekPath: String,
         projectPath: String = "./לעקסיקאָן.yaml"
     ) throws -> Lexicon {
@@ -59,7 +69,7 @@ struct Lexicon {
     /// Parse all `.swift` files under `path` and extract `typealias` mappings.
     /// Each `typealias YiddishName = EnglishName` becomes an entry.
     /// Also extracts wrapper function / property names from `extension` declarations.
-    static func deriveBibliotekMappings(from path: String) throws -> BiMap<String, String> {
+    public static func deriveBibliotekMappings(from path: String) throws -> BiMap<String, String> {
         var pairs: [(String, String)] = []
         let fm = FileManager.default
 
@@ -96,7 +106,7 @@ struct Lexicon {
 
     /// Extract `typealias Yiddish = English` and method-name mappings from a
     /// Swift source file.
-    static func extractMappings(from source: String) -> [(String, String)] {
+    public static func extractMappings(from source: String) -> [(String, String)] {
         var pairs: [(String, String)] = []
 
         let lines = source.components(separatedBy: "\n")
@@ -143,7 +153,7 @@ struct Lexicon {
 
     // MARK: - Project identifier loading
 
-    static func loadProjectIdentifiers(from path: String) throws -> BiMap<String, String> {
+    public static func loadProjectIdentifiers(from path: String) throws -> BiMap<String, String> {
         guard FileManager.default.fileExists(atPath: path) else {
             return BiMap([])
         }
@@ -160,7 +170,7 @@ struct Lexicon {
     /// identifiers:
     ///   יִידיש: english
     /// ```
-    static func parseYAMLIdentifiers(_ yaml: String) -> [(String, String)] {
+    public static func parseYAMLIdentifiers(_ yaml: String) -> [(String, String)] {
         var pairs: [(String, String)] = []
         var inIdentifiers = false
 
@@ -210,7 +220,7 @@ struct Lexicon {
 
     /// Validates that no Yiddish key or English value in `identifiers` collides
     /// with a key/value already present in `keywords` or `bibliotek`.
-    static func validateNoCrossCollisions(
+    public static func validateNoCrossCollisions(
         keywords: BiMap<String, String>,
         bibliotek: BiMap<String, String>,
         identifiers: BiMap<String, String>
@@ -247,10 +257,10 @@ struct Lexicon {
 
 // MARK: - Errors
 
-enum LexiconError: Error, CustomStringConvertible {
+public enum LexiconError: Error, CustomStringConvertible {
     case collision(yiddish: String, english: String, tier: String)
 
-    var description: String {
+    public var description: String {
         switch self {
         case .collision(let y, let e, let tier):
             return "Collision: '\(y)' ↔ '\(e)' conflicts with \(tier)"

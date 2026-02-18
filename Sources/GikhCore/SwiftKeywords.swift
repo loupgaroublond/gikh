@@ -1,7 +1,7 @@
 /// All Swift keywords and Yiddish keyword equivalents compiled into the binary.
-enum SwiftKeywords {
+public enum SwiftKeywords {
     /// English Swift keywords (Mode A / Mode C).
-    static let english: Set<String> = [
+    public static let english: Set<String> = [
         // Declarations
         "associatedtype", "class", "deinit", "enum", "extension", "fileprivate",
         "func", "import", "init", "inout", "internal", "let", "open", "operator",
@@ -33,7 +33,7 @@ enum SwiftKeywords {
 
     /// Yiddish keyword equivalents (Mode B).
     /// Maps Yiddish keyword → English keyword.
-    static let yiddishToEnglish: [String: String] = [
+    public static let yiddishToEnglish: [String: String] = [
         "פֿונקציע": "func",
         "לאָז": "let",
         "באַשטימען": "var",
@@ -66,7 +66,7 @@ enum SwiftKeywords {
     ]
 
     /// The union of all keywords (English + Yiddish) — used by Scanner.
-    static let all: Set<String> = {
+    public static let all: Set<String> = {
         var s = english
         for k in yiddishToEnglish.keys { s.insert(k) }
         return s
@@ -74,7 +74,7 @@ enum SwiftKeywords {
 
     /// A BiMap from Yiddish keyword → English keyword.
     /// Used by Lexicon and Translator.
-    static let keywordsMap: BiMap<String, String> = {
+    public static let keywordsMap: BiMap<String, String> = {
         BiMap(Array(yiddishToEnglish))
     }()
 }

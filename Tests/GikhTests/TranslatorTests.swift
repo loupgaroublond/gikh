@@ -1,20 +1,7 @@
 import Testing
-@testable import גיך
+@testable import GikhCore
 
 // MARK: - Helpers
-
-private func makeTokens(_ pairs: [(String, (String, Range<String.Index>) -> Token)]) -> [Token] {
-    var result: [Token] = []
-    var offset = "a".startIndex
-    let base = "a"
-    for (text, ctor) in pairs {
-        let start = base.startIndex
-        let end = base.endIndex
-        result.append(ctor(text, start..<end))
-        _ = offset
-    }
-    return result
-}
 
 /// Build a simple token stream from a source string via Scanner.
 private func tokens(for source: String) -> [Token] {

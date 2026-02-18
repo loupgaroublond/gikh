@@ -6,10 +6,16 @@
 /// values replaced where appropriate.  All opaque tokens (string literals,
 /// comments, whitespace, numbers, operators, punctuation) pass through
 /// unchanged.
-struct Translator {
-    let lexicon: Lexicon
-    let direction: Direction
-    let mode: TranslationMode
+public struct Translator {
+    public let lexicon: Lexicon
+    public let direction: Direction
+    public let mode: TranslationMode
+
+    public init(lexicon: Lexicon, direction: Direction, mode: TranslationMode) {
+        self.lexicon = lexicon
+        self.direction = direction
+        self.mode = mode
+    }
 
     // MARK: - Public entry point
 
@@ -18,7 +24,7 @@ struct Translator {
     /// Only `.keyword` and `.identifier` tokens are candidates for
     /// replacement. All other token kinds pass through with their original
     /// text intact.
-    func translate(_ tokens: [Token]) -> [Token] {
+    public func translate(_ tokens: [Token]) -> [Token] {
         tokens.map { token in
             switch token {
             case .keyword(let word, let range):

@@ -2,7 +2,7 @@
 ///
 /// Each case carries the raw source text and the range it occupies in the
 /// original string so the token stream can be reconstructed losslessly.
-enum Token {
+public enum Token {
     /// A Swift keyword or Yiddish keyword equivalent (translatable).
     case keyword(String, Range<String.Index>)
 
@@ -79,7 +79,7 @@ enum Token {
 // MARK: - Equatable
 
 extension Token: Equatable {
-    static func == (lhs: Token, rhs: Token) -> Bool {
+    public static func == (lhs: Token, rhs: Token) -> Bool {
         lhs.text == rhs.text && lhs.range == rhs.range
     }
 }
@@ -87,7 +87,7 @@ extension Token: Equatable {
 // MARK: - CustomDebugStringConvertible
 
 extension Token: CustomDebugStringConvertible {
-    var debugDescription: String {
+    public var debugDescription: String {
         switch self {
         case .keyword(let s, _):            return ".keyword(\(s.debugDescription))"
         case .identifier(let s, _):         return ".identifier(\(s.debugDescription))"
@@ -106,7 +106,7 @@ extension Token: CustomDebugStringConvertible {
 // MARK: - Direction
 
 /// Which direction the transpiler is converting.
-enum Direction {
+public enum Direction {
     /// Yiddish (Mode B) → English (Mode A or Mode C).
     case toEnglish
     /// English (Mode A or Mode C) → Yiddish (Mode B).
@@ -116,7 +116,7 @@ enum Direction {
 // MARK: - TargetMode
 
 /// The target representation after transpilation.
-enum TargetMode {
+public enum TargetMode {
     /// Mode A — full English: English keywords, English identifiers, no BiDi.
     case modeA
     /// Mode B — full Yiddish (.gikh): Yiddish keywords, Yiddish identifiers,
@@ -130,7 +130,7 @@ enum TargetMode {
 // MARK: - TranslationMode
 
 /// Which dictionaries are active during translation.
-enum TranslationMode {
+public enum TranslationMode {
     /// Keywords only (B ↔ C compiler workflow).
     case keywordsOnly
     /// All dictionaries (A ↔ B developer workflow).

@@ -2,7 +2,7 @@
 ///
 /// Both `toValue` and `toKey` are O(1) average case because the reverse mapping
 /// is maintained alongside the forward mapping.
-struct BiMap<Key: Hashable & Sendable, Value: Hashable & Sendable>: Sendable {
+public struct BiMap<Key: Hashable & Sendable, Value: Hashable & Sendable>: Sendable {
     private var forward: [Key: Value]
     private var reverse: [Value: Key]
 
@@ -11,7 +11,7 @@ struct BiMap<Key: Hashable & Sendable, Value: Hashable & Sendable>: Sendable {
     /// - Precondition: All keys are unique **and** all values are unique.
     ///   Duplicate values would violate bijectivity and are caught with a
     ///   `precondition` failure.
-    init(_ pairs: [(Key, Value)]) {
+    public init(_ pairs: [(Key, Value)]) {
         forward = Dictionary(uniqueKeysWithValues: pairs)
         reverse = Dictionary(uniqueKeysWithValues: pairs.map { ($1, $0) })
 
@@ -23,7 +23,7 @@ struct BiMap<Key: Hashable & Sendable, Value: Hashable & Sendable>: Sendable {
 
     /// Failable initialiser that returns `nil` instead of trapping when the
     /// pairs are not bijective (duplicate keys or duplicate values).
-    init?(safe pairs: [(Key, Value)]) {
+    public init?(safe pairs: [(Key, Value)]) {
         // Build forward dict manually to detect duplicate keys without trapping.
         var fwd: [Key: Value] = Dictionary(minimumCapacity: pairs.count)
         for (k, v) in pairs {
@@ -43,14 +43,14 @@ struct BiMap<Key: Hashable & Sendable, Value: Hashable & Sendable>: Sendable {
     }
 
     /// Looks up the value associated with `key`.
-    func toValue(_ key: Key) -> Value? { forward[key] }
+    public func toValue(_ key: Key) -> Value? { forward[key] }
 
     /// Looks up the key associated with `value`.
-    func toKey(_ value: Value) -> Key? { reverse[value] }
+    public func toKey(_ value: Value) -> Key? { reverse[value] }
 
     /// All (key, value) pairs in the map.
-    var allPairs: [(Key, Value)] { Array(forward) }
+    public var allPairs: [(Key, Value)] { Array(forward) }
 
     /// The number of entries in the map.
-    var count: Int { forward.count }
+    public var count: Int { forward.count }
 }

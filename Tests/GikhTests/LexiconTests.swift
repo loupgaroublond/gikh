@@ -1,6 +1,6 @@
 import Testing
 import Foundation
-@testable import גיך
+@testable import GikhCore
 
 // MARK: - Helpers
 

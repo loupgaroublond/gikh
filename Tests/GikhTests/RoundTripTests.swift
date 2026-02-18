@@ -1,5 +1,5 @@
 import Testing
-@testable import גיך
+@testable import GikhCore
 
 // MARK: - Round-trip helpers
 
@@ -32,7 +32,7 @@ private func transpile(
     lexicon: Lexicon,
     target: TargetMode
 ) -> String {
-    GikhCLI.transpileSource(source, lexicon: lexicon, target: target)
+    Transpiler.transpile(source, lexicon: lexicon, target: target)
 }
 
 // MARK: - B → C → B round-trip tests

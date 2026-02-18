@@ -1,4 +1,5 @@
 import Foundation
+import GikhCore
 
 // גיך CLI — Phase 2 transpiler
 // Commands:
@@ -51,6 +52,10 @@ struct GikhCLI {
             try transpile(args: Array(args.dropFirst()), target: .modeB)
         case "to-hybrid":
             try transpile(args: Array(args.dropFirst()), target: .modeC)
+        case "scan":
+            try scan(args: Array(args.dropFirst()))
+        case "audit":
+            try audit(args: Array(args.dropFirst()))
         default:
             throw CLIError.unknownCommand(command)
         }
@@ -120,47 +125,12 @@ struct GikhCLI {
     }
 
     /// Transpile a source string to the given target mode.
-    /// Auto-detects the source mode from the file extension / content.
     static func transpileSource(
         _ source: String,
         lexicon: Lexicon,
         target: TargetMode
     ) -> String {
-        var scanner = Scanner(source: source)
-        let tokens = scanner.scan()
-        let annotator = BidiAnnotator()
-
-        switch target {
-        case .modeB:
-            // Target Mode B: swap English → Yiddish (full mode), then annotate RTL
-            let translator = Translator(
-                lexicon: lexicon,
-                direction: .toYiddish,
-                mode: .full
-            )
-            let translated = translator.translate(tokens)
-            return annotator.annotate(translated, target: .modeB)
-
-        case .modeA:
-            // Target Mode A: swap Yiddish → English (full mode), strip BiDi
-            let translator = Translator(
-                lexicon: lexicon,
-                direction: .toEnglish,
-                mode: .full
-            )
-            let translated = translator.translate(tokens)
-            return annotator.annotate(translated, target: .modeA)
-
-        case .modeC:
-            // Target Mode C: swap Yiddish keywords → English (keywords only), strip BiDi
-            let translator = Translator(
-                lexicon: lexicon,
-                direction: .toEnglish,
-                mode: .keywordsOnly
-            )
-            let translated = translator.translate(tokens)
-            return annotator.annotate(translated, target: .modeC)
-        }
+        Transpiler.transpile(source, lexicon: lexicon, target: target)
     }
 
     // MARK: - File helpers
@@ -272,6 +242,142 @@ struct GikhCLI {
             }
         }
         return "./Sources/ביבליאָטעק"
+    }
+
+    // MARK: - Scan command
+
+    /// `gikh scan [--built <dir>] [--interface <file>] [--format table|yaml|diff] <path>`
+    static func scan(args: [String]) throws {
+        var inputPath: String? = nil
+        var builtPath: String? = nil
+        var interfacePath: String? = nil
+        var format: ScanOutputFormat = .table
+        var i = 0
+
+        while i < args.count {
+            switch args[i] {
+            case "--built":
+                i += 1
+                if i < args.count { builtPath = args[i] }
+            case "--interface":
+                i += 1
+                if i < args.count { interfacePath = args[i] }
+            case "--format":
+                i += 1
+                if i < args.count {
+                    format = ScanOutputFormat(rawValue: args[i]) ?? .table
+                }
+            default:
+                inputPath = args[i]
+            }
+            i += 1
+        }
+
+        let lexicon = try Lexicon.forCompilation(
+            bibliotekPath: findBibliotekSourcePath()
+        )
+        let checker = CoverageChecker(lexicon: lexicon)
+
+        var symbols: [ExtractedSymbol] = []
+        let projectName: String
+
+        if let intfPath = interfacePath {
+            // Scan a .swiftinterface file
+            projectName = (intfPath as NSString).lastPathComponent
+            let modName = projectName.components(separatedBy: ".").first ?? projectName
+            let files = SwiftInterfaceParser.findInterfaceFiles(in: intfPath)
+            if files.isEmpty {
+                // Single file
+                let content = (try? String(contentsOfFile: intfPath, encoding: .utf8)) ?? ""
+                symbols = SwiftInterfaceParser.parse(content, moduleName: modName)
+            } else {
+                for f in files {
+                    let content = (try? String(contentsOf: URL(fileURLWithPath: f), encoding: .utf8)) ?? ""
+                    let mod = (f as NSString).lastPathComponent.components(separatedBy: ".").first ?? modName
+                    symbols.append(contentsOf: SwiftInterfaceParser.parse(content, moduleName: mod))
+                }
+            }
+        } else if let built = builtPath {
+            // Scan built artifacts — find .swiftinterface files in .build directory
+            projectName = (built as NSString).lastPathComponent
+            let intfFiles = SwiftInterfaceParser.findInterfaceFiles(in: built)
+            for f in intfFiles {
+                let content = (try? String(contentsOf: URL(fileURLWithPath: f), encoding: .utf8)) ?? ""
+                let mod = (f as NSString).lastPathComponent.components(separatedBy: ".").first ?? "Unknown"
+                symbols.append(contentsOf: SwiftInterfaceParser.parse(content, moduleName: mod))
+            }
+        } else if let projPath = inputPath {
+            // Scan source files in a project directory
+            projectName = (projPath as NSString).lastPathComponent
+            let fm = FileManager.default
+            if let enumerator = fm.enumerator(atPath: projPath) {
+                while let file = enumerator.nextObject() as? String {
+                    if file.hasSuffix(".swift") || file.hasSuffix(".gikh") {
+                        let fullPath = (projPath as NSString).appendingPathComponent(file)
+                        let content = (try? String(contentsOfFile: fullPath, encoding: .utf8)) ?? ""
+                        symbols.append(contentsOf: SymbolExtractor.extractFromSource(
+                            content, moduleName: projectName
+                        ))
+                    }
+                }
+            }
+        } else {
+            throw CLIError.noInput
+        }
+
+        let report = checker.buildReport(symbols: symbols, projectName: projectName)
+        let output = ScanOutputFormatter.format(report, format: format)
+        print(output)
+    }
+
+    // MARK: - Audit command
+
+    /// `gikh audit --compiled <.build dir>`
+    static func audit(args: [String]) throws {
+        var builtPath: String? = nil
+        var i = 0
+        while i < args.count {
+            if args[i] == "--compiled", i + 1 < args.count {
+                builtPath = args[i + 1]
+                i += 2
+            } else {
+                i += 1
+            }
+        }
+
+        guard let path = builtPath else {
+            print("Usage: gikh audit --compiled .build/")
+            return
+        }
+
+        let lexicon = try Lexicon.forCompilation(
+            bibliotekPath: findBibliotekSourcePath()
+        )
+        let checker = CoverageChecker(lexicon: lexicon)
+
+        // Find .swiftinterface files in built artifacts
+        let intfFiles = SwiftInterfaceParser.findInterfaceFiles(in: path)
+        var symbols: [ExtractedSymbol] = []
+        for f in intfFiles {
+            let content = (try? String(contentsOf: URL(fileURLWithPath: f), encoding: .utf8)) ?? ""
+            let mod = (f as NSString).lastPathComponent.components(separatedBy: ".").first ?? "Unknown"
+            symbols.append(contentsOf: SwiftInterfaceParser.parse(content, moduleName: mod))
+        }
+
+        let report = checker.buildReport(symbols: symbols, projectName: "Audit")
+
+        if report.uncoveredByModule.isEmpty {
+            print("✓ All project identifiers covered")
+            return
+        }
+
+        for (mod, syms) in report.uncoveredByModule.sorted(by: { $0.key < $1.key }) {
+            print("⚠ \(syms.count) \(mod) symbols used but not in ביבליאָטעק:")
+            for sym in syms.sorted(by: { $0.name < $1.name }) {
+                print("  \(sym.name)  (\(mod))")
+            }
+        }
+        print("\nAdd wrappers to ביבליאָטעק, or add translations to the project לעקסיקאָן.")
     }
 
     // MARK: - Compile command

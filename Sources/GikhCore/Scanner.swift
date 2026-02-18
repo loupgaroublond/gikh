@@ -9,18 +9,18 @@
 ///   as `.interpolationDelimiter` tokens so the BiDi annotator can flip the
 ///   backslash in Mode B without touching string content.
 /// - The expression inside an interpolation is scanned normally.
-struct Scanner {
+public struct Scanner {
     let source: String
     var position: String.Index
 
-    init(source: String) {
+    public init(source: String) {
         self.source = source
         self.position = source.startIndex
     }
 
     // MARK: - Public entry point
 
-    mutating func scan() -> [Token] {
+    public mutating func scan() -> [Token] {
         position = source.startIndex
         var tokens: [Token] = []
 
@@ -505,7 +505,7 @@ struct Scanner {
 
 // MARK: - Unicode helpers
 
-extension Character {
+public extension Character {
     /// True if this character can start a Swift identifier.
     /// Includes `$` (for anonymous closure params), `_`, ASCII letters, and
     /// any Unicode letter/combining mark/connector punctuation.
