@@ -6,46 +6,71 @@ Gikh is a bidirectional transpiler that enables writing, reading, and distributi
 
 ## Current state
 
-**Design phase.** No implementation exists yet. The design document (`gikh-design_4.md`) is a starting point for discussion, not a finalized spec.
+**Fully implemented across 6 phases.** The transpiler is working end-to-end: scanning, tokenizing, translating, and round-tripping between Mode A (English Swift), Mode B (Yiddish .gikh), and Mode C (hybrid for compilation).
 
-## Design document
+## Build commands
 
-`gikh-design_4.md` contains the full design proposal. Key concepts:
+```bash
+swift build               # build all targets
+swift test                # run all 211 tests
+swift run גיך             # run the CLI transpiler
+```
 
-- **Three modes**: Mode A (full English `.swift`), Mode B (full Yiddish `.gikh` — source of truth), Mode C (hybrid for compilation). All modes are lossless and round-trippable. The same transpiler mechanism converts between any two modes.
+## Architecture
 
-- **Two workflows, same mechanism**: B→C is the compiler workflow (keywords + ביבליאָטעק only, runs at build time). A↔B is the developer workflow (all dictionaries, runs at interaction time for importing/rendering code).
+Five targets in `Sources/`:
 
-- **ביבליאָטעק**: The framework wrapper library. Source files *are* dictionary 2 — transpiler derives mappings directly from typealiases and wrappers. Two sections: core defaults (pre-built object code shipped with the tool) and project extensions (optional local `ביבליאָטעק/` directory). Every symbol fully translated — function names, parameter labels, properties, everything. The submodule יסוד (Yesod) specifically wraps Foundation.
+- **GikhCore** — core transpiler: scanner, tokenizer, BiMap, Lexicon, Translator, Transpiler, BidiAnnotator, ScanPipeline
+- **ביבליאָטעק** — Yiddish wrappers for Swift/Apple frameworks (SwiftUI, Foundation, AppKit, Charts, SwiftData, ArgumentParser). Source files derive the identifier dictionary directly.
+- **גיך** — CLI executable (`swift run גיך`). Bundles `Dictionaries/` as a resource.
+- **גיך_פּלאַגין** — SwiftPM build tool plugin. Invokes `gikh-transpile` to transpile `.gikh` → Mode C at build time.
+- **gikh-transpile** — helper executable called by the build plugin.
 
-- **Compiler integration**: Two steps — (1) transpile `.gikh` → Mode C in memory (no intermediate files on disk), (2) link ביבליאָטעק object code into the final binary. Project ביבליאָטעק extensions are built and linked too. Result: `gikh compile main.gikh` produces a working program.
+## Tests
 
-- **Keywords compiled in**: Closed, finite set compiled into the transpiler binary.
+Two test suites in `Tests/`:
 
-- **Translation approval workflow**: Every English-to-Yiddish translation must be reviewed and approved by the user before being committed to any dictionary.
+- **GikhTests** — transpiler unit tests (BiMap, Scanner, Lexicon, Translator, Transpiler, BidiAnnotator, round-trips, end-to-end compile)
+- **ScanPipelineTests** — scan pipeline tests (SymbolExtractor, SwiftInterfaceParser, ScanOutputFormatter, LexiconSuggest, SDKVersionDiff, CoverageChecker)
 
-## Development approach
+Run: `swift test` — 211 tests total.
 
-- **Tests first**: Write all tests before implementation code. Tests are immutable once written (except bug fixes).
+## Example apps
 
-- **Compiler integration first** (Phase 1): Wire the full pipeline as a stub — passes `.gikh` through unchanged (Mode C content), compiles it, links ביבליאָטעק. Proves end-to-end toolchain integration before any transpilation logic exists. Phase 2 replaces the stub with real B→C conversion.
+Five example apps in `Examples/`, each with `.gikh` source and a `project.yml` for xcodegen:
 
-- **ביבליאָטעק coverage is scoped to examples**: Only translate enough framework surface for the example apps to be 100% Yiddish. Comprehensive coverage is a future goal.
+| Directory | App name | Type |
+|-----------|----------|------|
+| `שורה_כּלי/` | שורה_כּלי | CLI tool (text analysis) |
+| `דאַטן_אַפּ/` | רעצעפּט_אַפּ | SwiftData recipe app |
+| `טשאַרטן_אַפּ/` | וועטער_אַפּ | Charts weather dashboard |
+| `קאָד_בליקער/` | קאָד_בליקער | AppKit .gikh code viewer with file tree |
+| `באַניצער_פֿלאַך_אַפּ/` | צעטל_אַפּ | SwiftUI task list |
 
-- **No unit tests for ביבליאָטעק**: The wrappers are mechanical 1:1 translations. 100% test coverage applies to the transpiler itself.
+All source is 100% Yiddish `.gikh` files. Each example has a `לעקסיקאָן.yaml` with project-specific identifier translations.
 
-- **Five example apps**: CLI tool, SwiftUI app, Charts app, SwiftData app, and a document-based Gikh code viewer (opens .gikh files, syntax highlighting, RTL rendering, file tree, multi-file tiling). All are Xcode projects (xcodegen). GUI apps compile to .app packages.
+To generate Xcode projects (`.xcodeproj` files are gitignored, generated on demand):
 
-- **100% Yiddish in examples**: All example app source is entirely RTL Yiddish `.gikh` files. No English identifiers anywhere. No exceptions.
+```bash
+cd Examples/<example-dir> && xcodegen generate
+```
 
-- **No generated artifacts**: No `.gikh/generated/` directory. Mode A and Mode C copies are for human consumption only, produced on demand. All tools accept `.gikh` directly.
+## Key files
 
-## Intended tech stack
+- `Package.swift` — package definition (targets: GikhCore, ביבליאָטעק, גיך, גיך_פּלאַגין, gikh-transpile)
+- `Sources/GikhCore/Transpiler.swift` — main transpile entry point
+- `Sources/GikhCore/Lexicon.swift` — loads and merges all dictionary tiers
+- `Sources/GikhCore/BiMap.swift` — bidirectional map used for translation
+- `Sources/GikhCore/Scanner.swift` — tokenizes Swift/Gikh source
+- `Sources/ביבליאָטעק/` — framework wrapper source (also serves as dictionary tier 2)
+- `Dictionaries/` — YAML dictionaries (keywords compiled in, common-words reference)
+- `gikh-design_4.md` — original design document
 
-- Swift, SwiftPM, xcodegen
-- SwiftPM build plugin for transparent `.gikh` compilation + ביבליאָטעק linking
-- YAML for project dictionaries and common-words reference only (keywords compiled in, ביבליאָטעק mappings derived from source)
+## Dictionary tiers
 
-## Key constraint
+1. Keywords — compiled into the binary (closed set)
+2. ביבליאָטעק — derived from typealias/wrapper source files
+3. Project YAML — `לעקסיקאָן.yaml` in each project root
+4. Common-words reference — `Dictionaries/` YAML files
 
-The translation approval workflow is non-negotiable. No dictionary entry ships without explicit user approval. This applies to all four dictionary tiers.
+Translation approval is non-negotiable: no entry ships without explicit user approval.

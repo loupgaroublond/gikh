@@ -1,0 +1,12 @@
+# Project-specific identifier translations
+# Format: yiddish: english
+identifiers:
+  וועטער_אַפּ: WeatherApp
+  וועטער_טאָוול: WeatherDashboard
+  טעגלעכע_וועטער: DailyWeather
+  וועטער_דאַטן: weatherData
+  טאָג: day
+  טעמפּעראַטור: temperature
+  רעגן: rain
+  פֿײַכטקייט: humidity
+  יום: day

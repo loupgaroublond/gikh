@@ -1,0 +1,21 @@
+# Project-specific identifier translations
+# Format: yiddish: english
+identifiers:
+  רעצעפּט: Recipe
+  רעצעפּט_אַפּ: RecipeApp
+  רעצעפּט_רשימה: RecipeList
+  רעצעפּט_פּרטים: RecipeDetails
+  נײַע_רעצעפּט: NewRecipe
+  נאָמען: name
+  צוטאַטן: ingredients
+  אָנווײַזונגען: instructions
+  צוטאַט: ingredient
+  רעצעפּטן: recipes
+  קאָנטעקסט: context
+  צייגן_נײַע_פֿאָרם: showNewForm
+  אינדעקסן: indices
+  אינדעקס: index
+  צוטאַטן_טעקסט: ingredientsText
+  צוטאַטן_רשימה: ingredientsList
+  רעצעפּט_נײַ: newRecipe
+  איז_דאָ: isPresented

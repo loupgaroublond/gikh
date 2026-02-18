@@ -1,0 +1,17 @@
+# Project-specific identifier translations
+# Format: yiddish: english
+identifiers:
+  טעקסט_אַנאַליזע: TextAnalyze
+  טעקע_וועג: filePath
+  אינהאַלט: content
+  שורות: lines
+  ווערטער_רשימה: wordList
+  צאָל_שורות: lineCount
+  צאָל_ווערטער: wordCount
+  צאָל_אותיות: charCount
+  ווערטער_צעלונג: wordFrequency
+  ווארט: word
+  קליין: lower
+  אָפֿטסטע_ווערטער: topWords
+  דורכשניטלעכע_לענג: averageLength
+  גאַנצע_לענג: totalLength
