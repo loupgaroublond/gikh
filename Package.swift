@@ -45,6 +45,7 @@ let package = Package(
         // Helper tool invoked by the build plugin to transpile .gikh -> .swift
         .executableTarget(
             name: "gikh-transpile",
+            dependencies: ["GikhCore"],
             path: "Sources/gikh-transpile"
         ),
 
