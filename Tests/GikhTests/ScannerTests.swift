@@ -324,38 +324,8 @@ struct ScannerTests {
     // MARK: - Yiddish keywords
 
     @Test func yiddishKeywordsRecognized() {
-        // These are the keywords from the design doc
-        let keywords = [
-            "פֿונקציע",   // func
-            "לאָז",        // let
-            "באַשטימען",   // var
-            "צוריק",       // return
-            "אויב",        // if
-            "אַנדערש",     // else
-            "פֿאַר",        // for
-            "אין",         // in
-            "בשעת",        // while
-            "סטרוקטור",    // struct
-            "קלאַס",       // class
-            "פּראָטאָקאָל",  // protocol
-            "היטער",       // guard
-            "וועקסל",      // switch
-            "פֿאַל",        // case
-            "ברעכן",       // break
-            "ממשיכן",      // continue
-            "טאָן",         // do
-            "כאַפּן",       // catch
-            "וואַרפֿן",     // throw
-            "וואַרפֿט",     // throws
-            "אַסינכראָן",   // async
-            "וואַרטן",      // await
-            "סטאַטיש",     // static
-            "פּריוואַט",    // private
-            "עפֿנטלעך",    // public
-            "אינערלעך",    // internal
-            "פֿאַרלענגערונג", // extension
-            "אימפּאָרט",   // import
-        ]
+        // All Yiddish keywords from keywords.yaml
+        let keywords = Array(SwiftKeywords.yiddishToEnglish.keys)
         for kw in keywords {
             var s = Scanner(source: kw)
             let tokens = s.scan()
