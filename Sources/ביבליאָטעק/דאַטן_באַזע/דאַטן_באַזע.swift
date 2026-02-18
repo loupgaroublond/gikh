@@ -1,4 +1,5 @@
 import SwiftData
+import SwiftUI
 import Foundation
 
 // MARK: - Core SwiftData type aliases
@@ -75,5 +76,12 @@ extension Schema {
     @_alwaysEmitIntoClient
     public static func מיט_טיפּן(_ טיפּן: [any PersistentModel.Type]) -> Schema {
         Schema(טיפּן)
+    }
+}
+
+// MARK: - Scene+modelContainer wrapper
+extension Scene {
+    @_transparent public func מאָדעל_באַהעלטעניש<T: PersistentModel>(פֿאַר סאָרט: T.Type) -> some Scene {
+        self.modelContainer(for: סאָרט)
     }
 }
