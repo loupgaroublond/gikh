@@ -16,7 +16,10 @@ let package = Package(
         .executableTarget(
             name: "גיך",
             dependencies: ["ביבליאָטעק"],
-            path: "Sources/גיך"
+            path: "Sources/גיך",
+            resources: [
+                .copy("../../Dictionaries"),
+            ]
         ),
 
         // Framework wrapper library
