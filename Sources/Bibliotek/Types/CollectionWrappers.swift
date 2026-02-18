@@ -5,6 +5,8 @@ public typealias אָפּציע = Optional
 public typealias רעזולטאַט = Result
 public typealias טווח = Range
 public typealias טווח_פֿון = ClosedRange
+public typealias זיכבאַשטימט = Identifiable
+public typealias האַשבאַר = Hashable
 
 extension Array {
     @_transparent public var צאָל_פֿון: Int { count }

@@ -1,27 +1,6 @@
 tier: project
-
 identifiers:
-  # App structure
-  מײַן_אַפּ: MyApp
+  באַגריסונג_אַפּ: GreetingApp
   אינהאַלט_בליק: ContentView
-  גוף: body
-  ראשי: main
-
-  # State properties
   צוויי_צאָלער: counter
-  נאָמען: name
-  ווײַז_באַגריסונג: showGreeting
-
-  # Actions / methods
-  צולייגן_איינס: incrementCounter
-  אַראָפּנעמען_איינס: decrementCounter
-  צוריקשטעלן: resetCounter
-
-  # UI strings
-  באַגריסונג_טעקסט: greetingText
-  צעלער_טעקסט: counterText
-
-  # Layout
-  אינערלעכער_אינהאַלט: innerContent
-  באַגריסונג_אָפּטייל: greetingSection
-  צעלער_אָפּטייל: counterSection
+  אָפּשטעל: Reset

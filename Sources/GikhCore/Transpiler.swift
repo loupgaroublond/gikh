@@ -53,11 +53,14 @@ public enum Transpiler {
     ) -> (Direction, TranslationMode) {
         switch (source, target) {
         case (.modeB, .modeC):
-            // Compiler workflow: Yiddish → hybrid. Translate keywords only.
-            return (.toEnglish, .keywordsOnly)
+            // Compiler workflow: Yiddish → hybrid. Translate keywords + bibliotek.
+            // Uses .full mode because Lexicon.forCompilation() has empty identifiers,
+            // so only keywords and bibliotek symbols are translated — user identifiers
+            // pass through unchanged, which is exactly what Mode C requires.
+            return (.toEnglish, .full)
         case (.modeC, .modeB):
-            // Reverse compiler workflow: hybrid → Yiddish. Keywords only.
-            return (.toYiddish, .keywordsOnly)
+            // Reverse compiler workflow: hybrid → Yiddish. Keywords + bibliotek.
+            return (.toYiddish, .full)
         case (.modeB, .modeA):
             // Developer workflow: Yiddish → English. Full translation.
             return (.toEnglish, .full)

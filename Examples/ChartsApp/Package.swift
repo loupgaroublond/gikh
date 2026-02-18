@@ -11,11 +11,7 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "ChartsApp",
-            dependencies: [
-                .product(name: "Bibliotek", package: "Gikh"),
-            ],
             path: "Sources",
-            sources: ["App.gikh"],
             plugins: [
                 .plugin(name: "GikhBuildPlugin", package: "Gikh"),
             ]

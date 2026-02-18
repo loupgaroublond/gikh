@@ -1,35 +1,12 @@
 tier: project
-description: >
-  Project dictionary for the SwiftData example app.
-  Maps Yiddish identifiers used in App.gikh to their English equivalents.
-
 identifiers:
-  # Model
-  אויפֿגאַבע: Task
-  טיטל: title
-  באַשרײַבונג: details
+  אויפֿגאַבע_פּונקט: TaskItem
   פֿאַרטיק: isDone
-  באַשאַפֿן_אום: createdAt
-
-  # App and views
-  אויפֿגאַבן_אַפּ: TaskApp
   אויפֿגאַבן_רשימה: TaskListView
-  גוף: body
-  באַהעלטער: container
   אויפֿגאַבן: tasks
   קאָנטעקסט: context
-  נײַע_אויפֿגאַבע: newTaskTitle
-  סאָרטירט: sortDescriptor
-
-  # Actions
-  צולייגן_אויפֿגאַבע: addTask
-  אויסמעקן_אויפֿגאַבע: deleteTask
-  אומקערן_סטאַטוס: toggleStatus
-  אויפֿגאַבע: task
+  נײַער_טיטל: newTitle
   פּונקט: item
-
-  # UI strings
-  אויפֿגאַבן_פֿאַרוואַלטער: Task Manager
-  נײַע_אויפֿגאַבע_פּלאַצהאַלטער: New task...
-  צולייגן: Add
-  קיין_אויפֿגאַבן: No tasks yet
+  אויפֿגאַבן_אַפּ: TaskApp
+  נײַ: Add
+  אויפֿגאַבע: task

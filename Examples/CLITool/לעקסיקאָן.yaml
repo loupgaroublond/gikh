@@ -1,27 +1,7 @@
 tier: project
-description: >
-  Project dictionary for the CLI word-counter tool.
-  Maps Yiddish identifiers used in main.gikh to their English equivalents.
-
 identifiers:
-  # Functions
-  ציילן_ווערטער: countWords
-  ווײַזן_סטאַטיסטיק: showStatistics
-  הויפּט: main
-
-  # Variables and constants
-  אַרגומענטן: arguments
-  טעקע_וועג: filePath
-  אינהאַלט: content
-  ווערטער: words
-  צאָל: count
-  שורות: lines
-  אותיות: characters
-  לאַנגסטע_וואָרט: longestWord
-  וואָרט: word
-  פֿעלער_מעלדונג: errorMessage
-
-  # Foundation API wrappers (from Bibliotek/Yesod)
-  טעקע_פֿאַרוואַלטער: FileManager
-  פּראָצעס: Process
-  סטרינג: String
+  צאָלן: numbers
+  סך_הכּל: total
+  סאָרטירטע_צאָלן: sortedNumbers
+  גלײַכע_צאָלן: evenNumbers
+  אומגלײַכע_צאָלן: oddNumbers

@@ -234,7 +234,8 @@ final class RoundTripTests: XCTestCase {
     // MARK: - Operators and Punctuation
 
     func testRoundTrip_preservesPunctuation() {
-        let source = "פֿונקציע test(a: Int, b: Int) -> Int {}"
+        // Mode B source must use Yiddish bibliotek names (צאָל, not Int)
+        let source = "פֿונקציע test(a: צאָל, b: צאָל) -> צאָל {}"
         let lexicon = compilationLexicon()
 
         assertRoundTrip(source: source, from: .modeB, through: .modeC, lexicon: lexicon)
@@ -250,9 +251,10 @@ final class RoundTripTests: XCTestCase {
     // MARK: - Mixed Content
 
     func testRoundTrip_BtoC_complexSource() {
+        // Mode B source must use Yiddish bibliotek names (סטרינג, not String)
         let source = """
         // A greeting function
-        פֿונקציע greet(name: String) -> String {
+        פֿונקציע greet(name: סטרינג) -> סטרינג {
             צוריק "Hello, \\(name)!"
         }
         """

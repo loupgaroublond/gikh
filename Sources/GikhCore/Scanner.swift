@@ -2,86 +2,9 @@
 // GikhCore — Lexer for the Gikh Yiddish-Swift transpiler.
 
 // MARK: - Keyword Sets
-
-/// All Swift reserved keywords.
-public let SwiftKeywords: Set<String> = [
-    // Declaration keywords
-    "associatedtype", "class", "deinit", "enum", "extension",
-    "fileprivate", "func", "import", "init", "inout", "internal",
-    "let", "open", "operator", "private", "precedencegroup",
-    "protocol", "public", "rethrows", "static", "struct",
-    "subscript", "typealias", "var",
-    // Statement keywords
-    "break", "case", "catch", "continue", "default", "defer",
-    "do", "else", "fallthrough", "for", "guard", "if", "in",
-    "repeat", "return", "switch", "throw", "try", "where", "while",
-    // Expression keywords
-    "as", "Any", "false", "is", "nil", "self", "Self", "super",
-    "throws", "true",
-    // Concurrency keywords
-    "async", "await",
-    // Type keywords
-    "some", "any",
-    // Macro keyword
-    "macro",
-    // Ownership keywords
-    "consuming", "borrowing", "noncopyable",
-]
-
-/// All Yiddish keyword translations.
-public let YiddishKeywords: Set<String> = [
-    "פֿונקציע",          // func
-    "לאָז",              // let
-    "באַשטימען",          // var
-    "צוריק",             // return
-    "אויב",              // if
-    "אַנדערש",            // else
-    "פֿאַר",              // for
-    "אין",               // in
-    "בשעת",              // while
-    "סטרוקטור",          // struct
-    "קלאַס",             // class
-    "פּראָטאָקאָל",        // protocol
-    "היטער",             // guard
-    "וועקסל",            // switch
-    "פֿאַל",              // case
-    "ברעכן",             // break
-    "ממשיכן",            // continue
-    "טאָן",              // do
-    "כאַפּן",             // catch
-    "וואַרפֿן",           // throw
-    "וואַרפֿט",           // throws
-    "אַסינכראָן",         // async
-    "וואַרטן",            // await
-    "סטאַטיש",           // static
-    "פּריוואַט",          // private
-    "עפֿנטלעך",          // public
-    "אינערלעך",          // internal
-    "פֿאַרלענגערונג",      // extension
-    "אימפּאָרט",          // import
-    "ענום",              // enum
-    "טיפּ_כּינוי",        // typealias
-    "אויפֿרוף",          // subscript
-    "באַזונדער",          // deinit
-    "אָפּן",              // open
-    "פּראָטאָקאָל_טיפּ",   // associatedtype
-    "ניט_קאָפּירבאַר",     // noncopyable
-    "פּראָבירן",          // try
-    "אַלץ",              // as
-    "יעדער",             // Any
-    "פֿאַלש",             // false
-    "אמת",               // true
-    "גאָרנישט",           // nil
-    "זיך",               // self
-    "זיך_טיפּ",           // Self
-    "העכער",             // super
-    "עטלעכע",            // some
-    "ווידער",            // repeat
-    "וואו",              // where
-    "אַראָפּפֿאַלן",       // fallthrough
-    "אָפּלייגן",          // defer
-    "פֿעליק",             // default
-]
+//
+// Keyword classification sets are derived from Keywords.dictionary to ensure
+// they stay in sync. See Keywords.swiftKeywords and Keywords.yiddishKeywords.
 
 // MARK: - Scanner
 
@@ -569,7 +492,7 @@ public struct Scanner {
             advance()
         }
         let word = text(from: start)
-        if SwiftKeywords.contains(word) || YiddishKeywords.contains(word) {
+        if Keywords.swiftKeywords.contains(word) || Keywords.yiddishKeywords.contains(word) {
             return .keyword(word, start..<position)
         }
         return .identifier(word, start..<position)

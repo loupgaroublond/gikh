@@ -119,13 +119,13 @@ final class TranspilerTests: XCTestCase {
     func testDetermineTranslation_BtoC() {
         let (direction, mode) = Transpiler.determineTranslation(from: .modeB, to: .modeC)
         XCTAssertEqual(direction, .toEnglish)
-        XCTAssertEqual(mode, .keywordsOnly)
+        XCTAssertEqual(mode, .full)
     }
 
     func testDetermineTranslation_CtoB() {
         let (direction, mode) = Transpiler.determineTranslation(from: .modeC, to: .modeB)
         XCTAssertEqual(direction, .toYiddish)
-        XCTAssertEqual(mode, .keywordsOnly)
+        XCTAssertEqual(mode, .full)
     }
 
     func testDetermineTranslation_BtoA() {

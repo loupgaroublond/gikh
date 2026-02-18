@@ -45,7 +45,7 @@ final class LexiconTests: XCTestCase {
     func testForDeveloper_emptyDictionaries() throws {
         let lexicon = try Lexicon.forDeveloper()
         XCTAssertFalse(lexicon.keywords.isEmpty)
-        XCTAssertTrue(lexicon.bibliotek.isEmpty)
+        XCTAssertFalse(lexicon.bibliotek.isEmpty, "Default bibliotek should be BibliotekMappings")
         XCTAssertTrue(lexicon.identifiers.isEmpty)
     }
 

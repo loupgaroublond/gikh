@@ -28,7 +28,7 @@ struct Gikh: ParsableCommand {
 /// Options shared across transpilation subcommands.
 struct TranspileOptions: ParsableArguments {
     @Argument(help: "Input file path(s) — .gikh or .swift files.")
-    var paths: [String]
+    var paths: [String] = []
 
     @Option(name: .shortAndLong, help: "Output file path. Defaults to stdout.")
     var output: String?

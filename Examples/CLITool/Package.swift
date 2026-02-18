@@ -11,11 +11,7 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "CLITool",
-            dependencies: [
-                .product(name: "Bibliotek", package: "Gikh"),
-            ],
             path: "Sources",
-            sources: ["main.gikh"],
             plugins: [
                 .plugin(name: "GikhBuildPlugin", package: "Gikh"),
             ]

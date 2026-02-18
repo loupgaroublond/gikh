@@ -34,7 +34,7 @@ public struct Lexicon {
     /// Project identifiers are not needed for compilation — the Yiddish identifiers
     /// pass through untranslated into Mode C, which is exactly what the compiler sees.
     public static func forCompilation(
-        bibliotekMappings: BiMap<String, String> = BiMap()
+        bibliotekMappings: BiMap<String, String> = BibliotekMappings.dictionary
     ) -> Lexicon {
         Lexicon(
             keywords: Keywords.dictionary,
@@ -48,7 +48,7 @@ public struct Lexicon {
     /// Validates bijectivity across the merged set of bibliotek and project identifiers,
     /// and checks that neither collides with the compiled-in keywords.
     public static func forDeveloper(
-        bibliotekMappings: BiMap<String, String> = BiMap(),
+        bibliotekMappings: BiMap<String, String> = BibliotekMappings.dictionary,
         projectIdentifiers: BiMap<String, String> = BiMap()
     ) throws -> Lexicon {
         // Merge bibliotek and project identifiers, checking for inter-tier collisions.
