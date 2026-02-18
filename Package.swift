@@ -25,10 +25,17 @@ let package = Package(
             path: "Sources/ביבליאָטעק"
         ),
 
+        // Helper tool invoked by the build plugin to transpile .gikh -> .swift
+        .executableTarget(
+            name: "gikh-transpile",
+            path: "Sources/gikh-transpile"
+        ),
+
         // SwiftPM build tool plugin
         .plugin(
             name: "גיך_פּלאַגין",
             capability: .buildTool(),
+            dependencies: ["gikh-transpile"],
             path: "Sources/גיך_פּלאַגין"
         ),
 
