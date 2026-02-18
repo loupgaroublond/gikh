@@ -34,11 +34,11 @@ class אַפּליקאַציע_דעלעגאַט_קלאַס: NSObject, אַפּל
         אַפּליקאַציע.shared.mainMenu = מעניו_שטאַנגע
     }
 
-    func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> Bool {
+    func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> באָאָל {
         return false
     }
 
-    func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
+    func applicationSupportsSecureRestorableState(_ app: NSApplication) -> באָאָל {
         return true
     }
 }

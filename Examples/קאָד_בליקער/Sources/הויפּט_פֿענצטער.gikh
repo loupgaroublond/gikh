@@ -8,8 +8,8 @@ class הויפּט_פֿענצטער_קאָנטראָלער_קלאַס: פֿענ�
     private let טיילער_קאָנטראָלער_אינסטאַנץ = טיילער_קאָנטראָלער_קלאַס()
 
     convenience init(דאָקומענט: קאָד_דאָקומענט_קלאַס) {
-        let פֿענצטער_אָבי = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 1000, height: 700),
+        let פֿענצטער_אָבי = פֿענצטער(
+            contentRect: מלבן(x: 0, y: 0, width: 1000, height: 700),
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
             backing: .buffered,
             defer: false

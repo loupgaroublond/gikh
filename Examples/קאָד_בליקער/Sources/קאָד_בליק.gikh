@@ -11,12 +11,12 @@ class קאָד_בליק_קאָנטראָלער: בליק_קאָנטראָלער 
     private var קאָד_לאַבל: NSTextField!
 
     // פּענדינג קאָד ביז דעם בליק איז גרייט
-    private var פּענדינג_קאָד: String? = nil
-    private var פּענדינג_טיטל: String = ""
-    private var ווײַז_פּלאַצהאַלטער: Bool = true
+    private var פּענדינג_קאָד: סטרינג? = nil
+    private var פּענדינג_טיטל: סטרינג = ""
+    private var ווײַז_פּלאַצהאַלטער: באָאָל = true
 
     override func loadView() {
-        let הויפּט_בליק = NSView(frame: NSRect(x: 0, y: 0, width: 700, height: 700))
+        let הויפּט_בליק = אַפּק_בליק(frame: מלבן(x: 0, y: 0, width: 700, height: 700))
 
         // טיטל-שורה
         טיטל_לאַבל = NSTextField(labelWithString: "")
@@ -27,7 +27,7 @@ class קאָד_בליק_קאָנטראָלער: בליק_קאָנטראָלער 
         הויפּט_בליק.addSubview(טיטל_לאַבל)
 
         // בלעטל-בליק מיט טעקסט
-        בלעטל = NSScrollView(frame: .zero)
+        בלעטל = בלעטל_בליק(frame: .zero)
         בלעטל.hasVerticalScroller = true
         בלעטל.hasHorizontalScroller = true
         בלעטל.autohidesScrollers = true
@@ -38,7 +38,7 @@ class קאָד_בליק_קאָנטראָלער: בליק_קאָנטראָלער 
         טעקסט_אָנצייגוונג.isSelectable = true
         טעקסט_אָנצייגוונג.font = NSFont.מאָנאָ_שריפֿט(גרייס: 13)
         טעקסט_אָנצייגוונג.backgroundColor = NSColor.textBackgroundColor
-        טעקסט_אָנצייגוונג.textContainerInset = NSSize(width: 16, height: 16)
+        טעקסט_אָנצייגוונג.textContainerInset = גרייס_ס(width: 16, height: 16)
         טעקסט_אָנצייגוונג.isRichText = false
         טעקסט_אָנצייגוונג.usesFontPanel = false
         טעקסט_אָנצייגוונג.baseWritingDirection = .rightToLeft
@@ -86,7 +86,7 @@ class קאָד_בליק_קאָנטראָלער: בליק_קאָנטראָלער 
     }
 
     // ווײַזן_קאָד — display highlighted source code with a title
-    func ווײַזן_קאָד(_ קאָד: String, טיטל: String) {
+    func ווײַזן_קאָד(_ קאָד: סטרינג, טיטל: סטרינג) {
         פּענדינג_קאָד = קאָד
         פּענדינג_טיטל = טיטל
         ווײַז_פּלאַצהאַלטער = false
@@ -104,7 +104,7 @@ class קאָד_בליק_קאָנטראָלער: בליק_קאָנטראָלער 
         }
     }
 
-    private func _ווײַזן_קאָד_אינערלעך(_ קאָד: String, טיטל: String) {
+    private func _ווײַזן_קאָד_אינערלעך(_ קאָד: סטרינג, טיטל: סטרינג) {
         טיטל_לאַבל.stringValue = טיטל
         קאָד_לאַבל.isHidden = true
         בלעטל.isHidden = false

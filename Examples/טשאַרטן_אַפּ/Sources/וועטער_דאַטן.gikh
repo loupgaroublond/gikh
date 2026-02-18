@@ -1,12 +1,12 @@
 import ביבליאָטעק
 import Foundation
 
-struct טעגלעכע_וועטער: Identifiable {
-    let id = UUID()
+struct טעגלעכע_וועטער: אידענטיפֿיצירבאַר {
+    let id = אוניווערסאַלער_קענציכן()
     let טאָג: סטרינג
-    let טעמפּעראַטור: Double
-    let רעגן: Double
-    let פֿײַכטקייט: Double
+    let טעמפּעראַטור: טאָפּל
+    let רעגן: טאָפּל
+    let פֿײַכטקייט: טאָפּל
 }
 
 let וועטער_דאַטן: [טעגלעכע_וועטער] = [

@@ -6,12 +6,12 @@ import AppKit
 
 // פֿײַל_בוים_אינטעם — represents a node in the file tree
 class פֿײַל_בוים_אינטעם: NSObject {
-    let אַדרעס_וועג: URL
+    let אַדרעס_וועג: אַדרעס
     var קינדער: [פֿײַל_בוים_אינטעם] = []
-    var איז_טעקע_וועג: Bool { אַדרעס_וועג.hasDirectoryPath }
-    var נאָמען: String { אַדרעס_וועג.lastPathComponent }
+    var איז_טעקע_וועג: באָאָל { אַדרעס_וועג.hasDirectoryPath }
+    var נאָמען: סטרינג { אַדרעס_וועג.לעצטע_קאָמפּאָנענטע }
 
-    init(וועג: URL) {
+    init(וועג: אַדרעס) {
         self.אַדרעס_וועג = וועג
         super.init()
         if וועג.hasDirectoryPath {
@@ -20,7 +20,7 @@ class פֿײַל_בוים_אינטעם: NSObject {
     }
 
     private func לאָדן_קינדער() {
-        let פֿאַרוואַלטער = FileManager.default
+        let פֿאַרוואַלטער = פֿײַל_פֿאַרוואַלטער.שותּפֿותּ
         guard let אינהאַלט = try? פֿאַרוואַלטער.contentsOfDirectory(
             at: אַדרעס_וועג,
             includingPropertiesForKeys: [.isDirectoryKey],
@@ -28,40 +28,40 @@ class פֿײַל_בוים_אינטעם: NSObject {
         ) else { return }
 
         קינדער = אינהאַלט
-            .filter { וועג in
+            .פֿילטער { וועג in
                 // ווײַזן נאָר .gikh טעקעס און סדרים
-                let ספֿח = וועג.pathExtension
+                let ספֿח = וועג.ספֿח
                 let איז_סדר = (try? וועג.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
                 return איז_סדר || ספֿח == "gikh"
             }
-            .sorted {
+            .סאָרטירט(דורך: {
                 let א_איז_סדר = (try? $0.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
                 let ב_איז_סדר = (try? $1.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
                 if א_איז_סדר != ב_איז_סדר { return א_איז_סדר }
-                return $0.lastPathComponent < $1.lastPathComponent
-            }
-            .map { פֿײַל_בוים_אינטעם(וועג: $0) }
+                return $0.לעצטע_קאָמפּאָנענטע < $1.לעצטע_קאָמפּאָנענטע
+            })
+            .מאַפּע { פֿײַל_בוים_אינטעם(וועג: $0) }
     }
 }
 
 // פֿײַל_בוים_קאָנטראָלער — manages the NSOutlineView sidebar
-class פֿײַל_בוים_קאָנטראָלער: בליק_קאָנטראָלער, NSOutlineViewDataSource, NSOutlineViewDelegate {
+class פֿײַל_בוים_קאָנטראָלער: בליק_קאָנטראָלער, גליד_בליק_דאַטן_קוואַל, גליד_בליק_דעלעגאַט {
     private var גליד_אָנצייגוונג: גליד_בליק!
     private var בלעטל_אָנצייגוונג: בלעטל_בליק!
     private var וואָרצל_אינטעמען: [פֿײַל_בוים_אינטעם] = []
 
     // קאַלבעק ווען אַ טעקע איז אויסגעקליבן
-    var טעקע_אויסגעקליבן: ((URL) -> Void)?
+    var טעקע_אויסגעקליבן: ((אַדרעס) -> Void)?
 
     override func loadView() {
-        let הויפּט_בליק = NSView(frame: NSRect(x: 0, y: 0, width: 220, height: 700))
+        let הויפּט_בליק = אַפּק_בליק(frame: מלבן(x: 0, y: 0, width: 220, height: 700))
 
-        בלעטל_אָנצייגוונג = NSScrollView(frame: .zero)
+        בלעטל_אָנצייגוונג = בלעטל_בליק(frame: .zero)
         בלעטל_אָנצייגוונג.hasVerticalScroller = true
         בלעטל_אָנצייגוונג.autohidesScrollers = true
         בלעטל_אָנצייגוונג.translatesAutoresizingMaskIntoConstraints = false
 
-        גליד_אָנצייגוונג = NSOutlineView(frame: .zero)
+        גליד_אָנצייגוונג = גליד_בליק(frame: .zero)
         גליד_אָנצייגוונג.dataSource = self
         גליד_אָנצייגוונג.delegate = self
         גליד_אָנצייגוונג.autoresizesOutlineColumn = true
@@ -91,11 +91,11 @@ class פֿײַל_בוים_קאָנטראָלער: בליק_קאָנטראָלע�
     }
 
     // לאָדן_סדר — load a directory into the file tree
-    func לאָדן_סדר(_ וועג: URL) {
+    func לאָדן_סדר(_ וועג: אַדרעס) {
         וואָרצל_אינטעמען = [פֿײַל_בוים_אינטעם(וועג: וועג)]
         גליד_אָנצייגוונג.reloadData()
         גליד_אָנצייגוונג.expandItem(nil, expandChildren: false)
-        if let ערשטער = וואָרצל_אינטעמען.first {
+        if let ערשטער = וואָרצל_אינטעמען.ערשטן {
             גליד_אָנצייגוונג.expandItem(ערשטער)
         }
     }
@@ -109,17 +109,17 @@ class פֿײַל_בוים_קאָנטראָלער: בליק_קאָנטראָלע�
 
     // MARK: - NSOutlineViewDataSource
 
-    func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
-        if item == nil { return וואָרצל_אינטעמען.count }
-        return (item as? פֿײַל_בוים_אינטעם)?.קינדער.count ?? 0
+    func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> צאָל {
+        if item == nil { return וואָרצל_אינטעמען.צאָל_פֿון }
+        return (item as? פֿײַל_בוים_אינטעם)?.קינדער.צאָל_פֿון ?? 0
     }
 
-    func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
+    func outlineView(_ outlineView: NSOutlineView, child index: צאָל, ofItem item: Any?) -> Any {
         if item == nil { return וואָרצל_אינטעמען[index] }
         return (item as! פֿײַל_בוים_אינטעם).קינדער[index]
     }
 
-    func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool {
+    func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> באָאָל {
         return (item as? פֿײַל_בוים_אינטעם)?.איז_טעקע_וועג ?? false
     }
 
@@ -150,7 +150,7 @@ class פֿײַל_בוים_קאָנטראָלער: בליק_קאָנטראָלע�
         if אינטעם.איז_טעקע_וועג {
             זעל.textField?.textColor = .אָראַנזש
             זעל.textField?.font = NSFont.סיסטעם_שריפֿט(גרייס: 12)
-        } else if אינטעם.נאָמען.hasSuffix(".gikh") {
+        } else if אינטעם.נאָמען.מיט_סופֿיקס(".gikh") {
             זעל.textField?.textColor = .בלוי
             זעל.textField?.font = NSFont.מאָנאָ_שריפֿט(גרייס: 12)
         } else {

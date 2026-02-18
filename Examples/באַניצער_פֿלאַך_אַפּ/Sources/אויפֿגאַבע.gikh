@@ -1,8 +1,8 @@
 import ביבליאָטעק
 import Foundation
 
-struct אויפֿגאַבע: Identifiable {
-    var id: UUID = UUID()
-    var טיטל: String
-    var דורכגעפֿירט: Bool = false
+struct אויפֿגאַבע: אידענטיפֿיצירבאַר {
+    var id: אוניווערסאַלער_קענציכן = אוניווערסאַלער_קענציכן()
+    var טיטל: סטרינג
+    var דורכגעפֿירט: באָאָל = false
 }
