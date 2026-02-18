@@ -37,7 +37,7 @@ struct BiMapCollision<Key: Hashable, Value: Hashable>: Error, CustomStringConver
 ///
 /// Both `toValue` and `toKey` are O(1) average case because the reverse mapping
 /// is maintained alongside the forward mapping.
-struct BiMap<Key: Hashable, Value: Hashable> {
+public struct BiMap<Key: Hashable & Sendable, Value: Hashable & Sendable>: Sendable {
     private var forward: [Key: Value]
     private var reverse: [Value: Key]
 
@@ -46,7 +46,7 @@ struct BiMap<Key: Hashable, Value: Hashable> {
     /// - Precondition: All keys are unique **and** all values are unique.
     ///   Duplicate values would violate bijectivity and are caught with a
     ///   `precondition` failure.
-    init(_ pairs: [(Key, Value)]) {
+    public init(_ pairs: [(Key, Value)]) {
         forward = Dictionary(uniqueKeysWithValues: pairs)
         reverse = Dictionary(uniqueKeysWithValues: pairs.map { ($1, $0) })
 
@@ -58,7 +58,7 @@ struct BiMap<Key: Hashable, Value: Hashable> {
 
     /// Failable initialiser that returns `nil` instead of trapping when the
     /// pairs are not bijective (duplicate keys or duplicate values).
-    init?(safe pairs: [(Key, Value)]) {
+    public init?(safe pairs: [(Key, Value)]) {
         // Build forward dict manually to detect duplicate keys without trapping.
         var fwd: [Key: Value] = Dictionary(minimumCapacity: pairs.count)
         for (k, v) in pairs {
@@ -78,26 +78,19 @@ struct BiMap<Key: Hashable, Value: Hashable> {
     }
 
     /// Looks up the value associated with `key`.
-    func toValue(_ key: Key) -> Value? { forward[key] }
+    public func toValue(_ key: Key) -> Value? { forward[key] }
 
     /// Looks up the key associated with `value`.
-    func toKey(_ value: Value) -> Key? { reverse[value] }
+    public func toKey(_ value: Value) -> Key? { reverse[value] }
+
+    /// All (key, value) pairs in the map.
+    public var allPairs: [(Key, Value)] { Array(forward) }
+
+    /// The number of entries in the map.
+    public var count: Int { forward.count }
 
     /// Merges `other` into this BiMap, enforcing bijectivity across the combined set.
-    ///
-    /// Returns a new BiMap containing all mappings from both maps, or throws a
-    /// `BiMapCollision` describing the first conflict found. The `sourceTier` and
-    /// `incomingTier` labels appear in the collision error message to identify which
-    /// dictionary tiers are in conflict.
-    ///
-    /// - Parameters:
-    ///   - other: The BiMap to merge into this one.
-    ///   - sourceTier: Human-readable name for this map (e.g. "keywords").
-    ///   - incomingTier: Human-readable name for the other map (e.g. "project").
-    /// - Returns: A new merged BiMap.
-    /// - Throws: `BiMapCollision` if any key or value in `other` collides with an
-    ///   existing key or value in this map.
-    func merging(
+    public func merging(
         _ other: BiMap<Key, Value>,
         sourceTier: String,
         incomingTier: String
@@ -105,7 +98,6 @@ struct BiMap<Key: Hashable, Value: Hashable> {
         var merged = self
 
         for (key, value) in other.forward {
-            // Check for key collision (same Yiddish word already defined).
             if merged.forward[key] != nil {
                 throw BiMapCollision<Key, Value>(
                     kind: .duplicateKey(key),
@@ -113,7 +105,6 @@ struct BiMap<Key: Hashable, Value: Hashable> {
                     incomingTier: incomingTier
                 )
             }
-            // Check for value collision (same English word already mapped).
             if merged.reverse[value] != nil {
                 throw BiMapCollision<Key, Value>(
                     kind: .duplicateValue(value),

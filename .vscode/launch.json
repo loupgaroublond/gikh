@@ -1,0 +1,64 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:gikh}",
+            "name": "Debug gikh",
+            "target": "gikh",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug gikh"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:gikh}",
+            "name": "Release gikh",
+            "target": "gikh",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release gikh"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:gikh}",
+            "name": "Debug גיך",
+            "target": "גיך",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug גיך"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:gikh}",
+            "name": "Release גיך",
+            "target": "גיך",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release גיך"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:gikh}",
+            "name": "Debug gikh-transpile",
+            "target": "gikh-transpile",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug gikh-transpile"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:gikh}",
+            "name": "Release gikh-transpile",
+            "target": "gikh-transpile",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release gikh-transpile"
+        }
+    ]
+}

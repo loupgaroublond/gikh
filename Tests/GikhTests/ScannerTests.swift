@@ -1,5 +1,5 @@
 import Testing
-@testable import גיך
+@testable import GikhCore
 
 // Helper: extract text from each token in order.
 private func texts(_ tokens: [Token]) -> [String] { tokens.map(\.text) }

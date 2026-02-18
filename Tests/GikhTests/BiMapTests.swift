@@ -1,5 +1,5 @@
 import Testing
-@testable import גיך
+@testable import GikhCore
 
 @Suite("BiMap")
 struct BiMapTests {
