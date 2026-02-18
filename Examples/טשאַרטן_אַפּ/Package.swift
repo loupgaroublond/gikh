@@ -11,11 +11,11 @@ let package = Package(
         .executableTarget(
             name: "וועטער_אַפּ",
             dependencies: [
-                .product(name: "ביבליאָטעק", package: "גיך"),
+                .product(name: "ביבליאָטעק", package: "fix-pkg-identity"),
             ],
             path: "Sources",
             plugins: [
-                .plugin(name: "גיך_פּלאַגין", package: "גיך"),
+                .plugin(name: "גיך_פּלאַגין", package: "fix-pkg-identity"),
             ]
         ),
     ]
