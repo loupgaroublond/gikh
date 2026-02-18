@@ -89,4 +89,92 @@ extension View {
     @_transparent public func וואָרצל_שטאַנגע<אינהאַלט: ToolbarContent>(@ToolbarContentBuilder _ אינהאַלט_בויער: () -> אינהאַלט) -> some View {
         self.toolbar(content: אינהאַלט_בויער)
     }
+
+    // Typography
+    @_transparent public func דורכגעשטראָכן(_ אַקטיוו: Bool = true, פֿאַרב: Color? = nil) -> some View {
+        self.strikethrough(אַקטיוו, color: פֿאַרב)
+    }
+
+    @_transparent public func פֿעט(_ אַקטיוו: Bool = true) -> some View {
+        self.bold(אַקטיוו)
+    }
+
+    @_transparent public func שורה_באַגרענעצונג(_ צאָל: Int?) -> some View {
+        self.lineLimit(צאָל)
+    }
+
+    // Controls
+    @_transparent public func עטיקעטן_פֿאַרבאָרגן() -> some View {
+        self.labelsHidden()
+    }
+
+    @_transparent public func פֿאַרשפּאַרט(_ קאָנדיציע: Bool) -> some View {
+        self.disabled(קאָנדיציע)
+    }
+
+    @_transparent public func פֿעסטע_גרייס(האָריזאָנטאַל: Bool = false, ווערטיקאַל: Bool = false) -> some View {
+        self.fixedSize(horizontal: האָריזאָנטאַל, vertical: ווערטיקאַל)
+    }
+
+    @_transparent public func פֿעסטע_גרייס() -> some View {
+        self.fixedSize()
+    }
+
+    @_transparent public func טעקסט_פֿעלד_סטיל<ס: TextFieldStyle>(_ סטיל: ס) -> some View {
+        self.textFieldStyle(סטיל)
+    }
+
+    // Swipe actions
+    @_transparent public func וויש_אַקציעס<אינהאַלט: View>(עקן: HorizontalEdge = .trailing, לאָזן_פֿול_וויש: Bool = true, @ViewBuilder _ אינהאַלט_בויער: () -> אינהאַלט) -> some View {
+        self.swipeActions(edge: עקן, allowsFullSwipe: לאָזן_פֿול_וויש, content: אינהאַלט_בויער)
+    }
+
+    // Animation
+    @_transparent public func אַנימאַציע(_ אַנימ: Animation?, ווערט: some Equatable) -> some View {
+        self.animation(אַנימ, value: ווערט)
+    }
+
+    @_transparent public func איבערגאַנג(_ אַריבערגאַנג: AnyTransition) -> some View {
+        self.transition(אַריבערגאַנג)
+    }
+
+    // Alerts / Dialogs
+    @_transparent public func אָנזאָג(
+        _ טיטל: Text,
+        איז_דאָ: Binding<Bool>,
+        @ViewBuilder אַקציעס: () -> some View
+    ) -> some View {
+        self.alert(טיטל, isPresented: איז_דאָ, actions: אַקציעס)
+    }
+
+    @_transparent public func אָנזאָג(
+        _ טיטל: LocalizedStringKey,
+        איז_דאָ: Binding<Bool>,
+        @ViewBuilder אַקציעס: () -> some View
+    ) -> some View {
+        self.alert(טיטל, isPresented: איז_דאָ, actions: אַקציעס)
+    }
+
+    @_transparent public func באַשטעטיקונג_דיאַלאָג(
+        _ טיטל: Text,
+        איז_דאָ: Binding<Bool>,
+        @ViewBuilder אַקציעס: () -> some View
+    ) -> some View {
+        self.confirmationDialog(טיטל, isPresented: איז_דאָ, actions: אַקציעס)
+    }
+
+    @_transparent public func באַשטעטיקונג_דיאַלאָג(
+        _ טיטל: LocalizedStringKey,
+        איז_דאָ: Binding<Bool>,
+        @ViewBuilder אַקציעס: () -> some View
+    ) -> some View {
+        self.confirmationDialog(טיטל, isPresented: איז_דאָ, actions: אַקציעס)
+    }
+}
+
+// MARK: - DynamicViewContent (ForEach) modifiers
+extension DynamicViewContent {
+    @_transparent public func בײַם_אויסמעקן(אַקציע: ((IndexSet) -> Void)? = nil) -> some DynamicViewContent {
+        self.onDelete(perform: אַקציע)
+    }
 }
