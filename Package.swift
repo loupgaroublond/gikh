@@ -12,6 +12,9 @@ let package = Package(
         .library(name: "ביבליאָטעק", targets: ["ביבליאָטעק"]),
         .library(name: "GikhCore", targets: ["GikhCore"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
+    ],
     targets: [
         // Core transpiler logic — shared between CLI and tests
         .target(
@@ -33,6 +36,9 @@ let package = Package(
         // Framework wrapper library
         .target(
             name: "ביבליאָטעק",
+            dependencies: [
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+            ],
             path: "Sources/ביבליאָטעק"
         ),
 
