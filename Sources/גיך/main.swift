@@ -1,5 +1,7 @@
 import Foundation
+import ביבליאָטעק
 
 // Phase 1 stub: gikh compile CLI
-// Will be replaced with full CLI in gikh-124
-print("גיך — Yiddish Swift Transpiler")
+// Will be replaced with full ArgumentParser CLI in gikh-124
+let שם: סטרינג = "גיך — Yiddish Swift Transpiler"
+דרוק(שם)
