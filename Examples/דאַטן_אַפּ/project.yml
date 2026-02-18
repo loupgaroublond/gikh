@@ -1,0 +1,19 @@
+name: רעצעפּט_אַפּ
+targets:
+  רעצעפּט_אַפּ:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: Sources
+        buildPhase: sources
+    dependencies:
+      - package: גיך
+        product: ביבליאָטעק
+    settings:
+      base:
+        SWIFT_VERSION: "6.0"
+        INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.productivity"
+packages:
+  גיך:
+    path: ../..

@@ -1,0 +1,13 @@
+import ביבליאָטעק
+import SwiftUI
+import SwiftData
+
+@main
+struct רעצעפּט_אַפּ: App {
+    var body: some Scene {
+        WindowGroup {
+            רעצעפּט_רשימה()
+        }
+        .modelContainer(for: רעצעפּט.self)
+    }
+}
