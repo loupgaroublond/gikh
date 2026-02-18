@@ -110,21 +110,147 @@ public struct Lexicon {
         var pairs: [(String, String)] = []
 
         let lines = source.components(separatedBy: "\n")
-        for line in lines {
+        for (idx, line) in lines.enumerated() {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
 
             // typealias pattern: `[public] typealias <Yiddish> = <English>`
             if let pair = parseTypealias(trimmed) {
                 pairs.append(pair)
+                continue
             }
 
-            // Extension member: `func <Yiddish>(...) ... { <English>(...)  }`
-            // We parse wrapper functions by looking for patterns like:
-            //   `public func <yiddishName>(...) { ... <englishName>(...) }`
-            // This is handled separately in `extractMemberMappings`.
+            // Extension member or global @_transparent function:
+            // Parse wrapper functions and properties, extracting the English
+            // equivalent from the function body.
+            let nextLine: String? = idx + 1 < lines.count
+                ? lines[idx + 1].trimmingCharacters(in: .whitespaces)
+                : nil
+            if let pair = parseExtensionMember(trimmed, nextLine: nextLine) {
+                pairs.append(pair)
+            }
         }
 
         return pairs
+    }
+
+    /// Parse extension member declarations (func/var/static var) and global
+    /// @_transparent/@_alwaysEmitIntoClient functions, extracting a
+    /// (Yiddish, English) name pair.
+    ///
+    /// Handles:
+    ///   - `[@_transparent] public [static] var יידיש: Type { body }`
+    ///   - `[@_transparent] public [static] func יידיש(...) ... { body }`
+    ///   - Multi-line bodies: if `{` ends the line, `nextLine` is inspected.
+    ///
+    /// The English equivalent is extracted from the body:
+    ///   - `{ count }` → "count"
+    ///   - `{ .red }` / `{ .red.something }` → "red"
+    ///   - `{ lowercased() }` → "lowercased"
+    ///   - `{ self.padding(...) }` → "padding"
+    ///   - `{ Swift.min(...) }` → "min"
+    ///   - `{ print(...) }` → "print"
+    ///   - `{ !isEmpty }` → "isEmpty"
+    ///   - `{ fatalError(...) }` → "fatalError"
+    static func parseExtensionMember(_ line: String, nextLine: String?) -> (String, String)? {
+        // Strip known attributes and access modifiers to get to the declaration.
+        var rest = line
+        for attr in ["@_transparent ", "@_alwaysEmitIntoClient "] {
+            if rest.hasPrefix(attr) { rest = String(rest.dropFirst(attr.count)) }
+        }
+        for mod in ["public ", "internal ", "private ", "fileprivate "] {
+            if rest.hasPrefix(mod) { rest = String(rest.dropFirst(mod.count)) }
+        }
+        // Strip `mutating` and `static`
+        for mod in ["mutating ", "static "] {
+            if rest.hasPrefix(mod) { rest = String(rest.dropFirst(mod.count)) }
+        }
+
+        let isFunc = rest.hasPrefix("func ")
+        let isVar  = rest.hasPrefix("var ")
+        guard isFunc || isVar else { return nil }
+
+        // Extract the Yiddish name: first identifier token after `func`/`var`.
+        rest = String(rest.dropFirst(isFunc ? "func ".count : "var ".count))
+        let yiddishName = extractIdentifier(from: rest)
+        guard !yiddishName.isEmpty else { return nil }
+
+        // Find the body: look for `{ ... }` on the same line, or fall back to nextLine.
+        let bodySource: String
+        if let openBrace = line.firstIndex(of: "{") {
+            let afterBrace = line[line.index(after: openBrace)...]
+            // Check if brace is the very last non-whitespace char (multi-line body)
+            let afterBraceTrimmed = afterBrace.trimmingCharacters(in: .whitespaces)
+            if afterBraceTrimmed.isEmpty || afterBraceTrimmed == "}" {
+                // Body is on next line
+                bodySource = nextLine ?? ""
+            } else {
+                bodySource = String(afterBrace)
+            }
+        } else {
+            // No brace on this line — skip
+            return nil
+        }
+
+        guard let englishName = extractEnglishFromBody(bodySource) else { return nil }
+
+        // Skip if yiddish == english (not a translation wrapper)
+        guard yiddishName != englishName else { return nil }
+
+        return (yiddishName, englishName)
+    }
+
+    /// Extract the leading identifier from a string (stops at `(`, `<`, `:`,
+    /// whitespace, `_` chains are included).
+    private static func extractIdentifier(from str: String) -> String {
+        var result = ""
+        for ch in str {
+            if ch.isLetter || ch.isNumber || ch == "_" {
+                result.append(ch)
+            } else {
+                break
+            }
+        }
+        return result
+    }
+
+    /// Given the text inside/after `{`, extract the English function/property name.
+    private static func extractEnglishFromBody(_ body: String) -> String? {
+        let trimmed = body.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return nil }
+
+        // Strip leading `!` or `return ` to reach the actual expression
+        var expr = trimmed
+        if expr.hasPrefix("!") { expr = String(expr.dropFirst()) }
+        if expr.hasPrefix("return ") { expr = String(expr.dropFirst("return ".count)) }
+
+        // Strip `self.` prefix
+        if expr.hasPrefix("self.") { expr = String(expr.dropFirst("self.".count)) }
+
+        // Strip module prefix like `Swift.`
+        if let dotRange = expr.range(of: "."),
+           expr[expr.startIndex..<dotRange.lowerBound].allSatisfy({ $0.isLetter || $0.isNumber }) {
+            let prefix = String(expr[expr.startIndex..<dotRange.lowerBound])
+            // Only strip if it looks like a module qualifier (all ASCII letters, e.g. "Swift")
+            let isModule = prefix.unicodeScalars.allSatisfy({ $0.value < 128 && ($0.isASCII) })
+            if isModule && !prefix.isEmpty {
+                let afterDot = String(expr[dotRange.upperBound...])
+                // If what follows is `.something`, this is a dot-enum prefix, handle below
+                if !afterDot.hasPrefix(".") {
+                    expr = afterDot
+                }
+            }
+        }
+
+        // Dot-prefixed enum/static member: `.red`, `.red.opacity(...)` → "red"
+        if expr.hasPrefix(".") {
+            expr = String(expr.dropFirst())
+            // Take just the first identifier component (before another `.` or `(`)
+            return extractIdentifier(from: expr).nilIfEmpty
+        }
+
+        // Bare identifier or function call: `count`, `isEmpty`, `lowercased()`, `padding(...)`
+        let name = extractIdentifier(from: expr)
+        return name.nilIfEmpty
     }
 
     private static func parseTypealias(_ line: String) -> (String, String)? {
@@ -256,6 +382,10 @@ public struct Lexicon {
 }
 
 // MARK: - Errors
+
+private extension String {
+    var nilIfEmpty: String? { isEmpty ? nil : self }
+}
 
 public enum LexiconError: Error, CustomStringConvertible {
     case collision(yiddish: String, english: String, tier: String)
