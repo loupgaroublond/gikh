@@ -1,0 +1,11 @@
+import ביבליאָטעק
+import SwiftUI
+
+@main
+struct צעטל_אַפּ: App {
+    var body: some Scene {
+        WindowGroup {
+            אויפֿגאַבע_רשימה_בליק()
+        }
+    }
+}

@@ -1,0 +1,8 @@
+import ביבליאָטעק
+import Foundation
+
+struct אויפֿגאַבע: Identifiable {
+    var id: UUID = UUID()
+    var טיטל: String
+    var דורכגעפֿירט: Bool = false
+}
