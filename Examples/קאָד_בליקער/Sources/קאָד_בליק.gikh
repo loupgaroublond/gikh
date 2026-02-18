@@ -1,0 +1,120 @@
+import ביבליאָטעק
+import AppKit
+
+// קאָד_בליק.gikh — קאָד_בליק_קאָנטראָלער (NSTextView wrapper)
+// Renders .gikh content with syntax highlighting and RTL support.
+
+class קאָד_בליק_קאָנטראָלער: בליק_קאָנטראָלער {
+    private var בלעטל: בלעטל_בליק!
+    private var טעקסט_אָנצייגוונג: טעקסט_בליק!
+    private var טיטל_לאַבל: NSTextField!
+    private var קאָד_לאַבל: NSTextField!
+
+    // פּענדינג קאָד ביז דעם בליק איז גרייט
+    private var פּענדינג_קאָד: String? = nil
+    private var פּענדינג_טיטל: String = ""
+    private var ווײַז_פּלאַצהאַלטער: Bool = true
+
+    override func loadView() {
+        let הויפּט_בליק = NSView(frame: NSRect(x: 0, y: 0, width: 700, height: 700))
+
+        // טיטל-שורה
+        טיטל_לאַבל = NSTextField(labelWithString: "")
+        טיטל_לאַבל.font = NSFont.סיסטעם_שריפֿט(גרייס: 13)
+        טיטל_לאַבל.textColor = .צווייטע_שריפֿט_פֿאַרב
+        טיטל_לאַבל.alignment = .right
+        טיטל_לאַבל.translatesAutoresizingMaskIntoConstraints = false
+        הויפּט_בליק.addSubview(טיטל_לאַבל)
+
+        // בלעטל-בליק מיט טעקסט
+        בלעטל = NSScrollView(frame: .zero)
+        בלעטל.hasVerticalScroller = true
+        בלעטל.hasHorizontalScroller = true
+        בלעטל.autohidesScrollers = true
+        בלעטל.translatesAutoresizingMaskIntoConstraints = false
+
+        טעקסט_אָנצייגוונג = טעקסט_בליק(frame: .zero)
+        טעקסט_אָנצייגוונג.isEditable = false
+        טעקסט_אָנצייגוונג.isSelectable = true
+        טעקסט_אָנצייגוונג.font = NSFont.מאָנאָ_שריפֿט(גרייס: 13)
+        טעקסט_אָנצייגוונג.backgroundColor = NSColor.textBackgroundColor
+        טעקסט_אָנצייגוונג.textContainerInset = NSSize(width: 16, height: 16)
+        טעקסט_אָנצייגוונג.isRichText = false
+        טעקסט_אָנצייגוונג.usesFontPanel = false
+        טעקסט_אָנצייגוונג.baseWritingDirection = .rightToLeft
+        טעקסט_אָנצייגוונג.isVerticallyResizable = true
+        טעקסט_אָנצייגוונג.isHorizontallyResizable = false
+        טעקסט_אָנצייגוונג.autoresizingMask = [.width]
+        טעקסט_אָנצייגוונג.textContainer?.widthTracksTextView = true
+
+        בלעטל.documentView = טעקסט_אָנצייגוונג
+        הויפּט_בליק.addSubview(בלעטל)
+
+        // פּלאַצהאַלטער-לאַבל ווען קיין טעקע
+        קאָד_לאַבל = NSTextField(labelWithString: "עפֿענט אַ .gikh טעקע צו זען דעם קאָד")
+        קאָד_לאַבל.font = NSFont.סיסטעם_שריפֿט(גרייס: 16)
+        קאָד_לאַבל.textColor = .צווייטע_שריפֿט_פֿאַרב
+        קאָד_לאַבל.alignment = .center
+        קאָד_לאַבל.translatesAutoresizingMaskIntoConstraints = false
+        הויפּט_בליק.addSubview(קאָד_לאַבל)
+
+        NSLayoutConstraint.activate([
+            טיטל_לאַבל.topAnchor.constraint(equalTo: הויפּט_בליק.topAnchor, constant: 8),
+            טיטל_לאַבל.leadingAnchor.constraint(equalTo: הויפּט_בליק.leadingAnchor, constant: 8),
+            טיטל_לאַבל.trailingAnchor.constraint(equalTo: הויפּט_בליק.trailingAnchor, constant: -8),
+
+            בלעטל.topAnchor.constraint(equalTo: טיטל_לאַבל.bottomAnchor, constant: 4),
+            בלעטל.leadingAnchor.constraint(equalTo: הויפּט_בליק.leadingAnchor),
+            בלעטל.trailingAnchor.constraint(equalTo: הויפּט_בליק.trailingAnchor),
+            בלעטל.bottomAnchor.constraint(equalTo: הויפּט_בליק.bottomAnchor),
+
+            קאָד_לאַבל.centerXAnchor.constraint(equalTo: הויפּט_בליק.centerXAnchor),
+            קאָד_לאַבל.centerYAnchor.constraint(equalTo: הויפּט_בליק.centerYAnchor),
+        ])
+
+        self.view = הויפּט_בליק
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // אויב מיר האָבן פּענדינג קאָד, ווײַזן עס איצט
+        if let קאָד = פּענדינג_קאָד {
+            _ווײַזן_קאָד_אינערלעך(קאָד, טיטל: פּענדינג_טיטל)
+        } else if ווײַז_פּלאַצהאַלטער {
+            _ווײַזן_פּלאַצהאַלטער_אינערלעך()
+        }
+    }
+
+    // ווײַזן_קאָד — display highlighted source code with a title
+    func ווײַזן_קאָד(_ קאָד: String, טיטל: String) {
+        פּענדינג_קאָד = קאָד
+        פּענדינג_טיטל = טיטל
+        ווײַז_פּלאַצהאַלטער = false
+        if isViewLoaded {
+            _ווײַזן_קאָד_אינערלעך(קאָד, טיטל: טיטל)
+        }
+    }
+
+    // ווײַזן_פּלאַצהאַלטער — show placeholder when no file is loaded
+    func ווײַזן_פּלאַצהאַלטער() {
+        פּענדינג_קאָד = nil
+        ווײַז_פּלאַצהאַלטער = true
+        if isViewLoaded {
+            _ווײַזן_פּלאַצהאַלטער_אינערלעך()
+        }
+    }
+
+    private func _ווײַזן_קאָד_אינערלעך(_ קאָד: String, טיטל: String) {
+        טיטל_לאַבל.stringValue = טיטל
+        קאָד_לאַבל.isHidden = true
+        בלעטל.isHidden = false
+        let באַלויכטן = סינטאַקס_פֿאַרבונג(פֿון: קאָד)
+        טעקסט_אָנצייגוונג.textStorage?.setAttributedString(באַלויכטן)
+    }
+
+    private func _ווײַזן_פּלאַצהאַלטער_אינערלעך() {
+        טיטל_לאַבל.stringValue = ""
+        קאָד_לאַבל.isHidden = false
+        בלעטל.isHidden = true
+    }
+}

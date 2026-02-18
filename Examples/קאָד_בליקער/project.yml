@@ -1,0 +1,31 @@
+name: קאָד_בליקער
+targets:
+  קאָד_בליקער:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: Sources
+        buildPhase: sources
+    dependencies:
+      - package: גיך
+        product: ביבליאָטעק
+    settings:
+      base:
+        SWIFT_VERSION: "6.0"
+        INFOPLIST_KEY_CFBundleDocumentTypes: |
+          <array>
+            <dict>
+              <key>CFBundleTypeName</key>
+              <string>Gikh Source</string>
+              <key>CFBundleTypeExtensions</key>
+              <array><string>gikh</string></array>
+              <key>CFBundleTypeRole</key>
+              <string>Viewer</string>
+              <key>LSItemContentTypes</key>
+              <array><string>com.gikh.source</string></array>
+            </dict>
+          </array>
+packages:
+  גיך:
+    path: ../..
