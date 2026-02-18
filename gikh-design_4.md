@@ -21,6 +21,7 @@ This applies to all four dictionary tiers: keywords, standard library, macOS API
 
 ### Code Quality Requirements
 
+- **Tests first.** Write all tests before writing a line of implementation code. Once a test is written, it must not be substantially modified except to fix bugs in the test itself. The test suite is the spec.
 - **100% code coverage on the transpiler.** Every line of the transpiler — scanner, translator, BiDi annotator, BiMap, lexicon loader — must be covered by tests. The ביבליאָטעק wrappers are mechanical 1:1 translations and do not require unit tests.
 - **Zero warnings, zero errors.** The project must build and test with `-warnings-as-errors` enabled. No deprecation warnings, no unused variable warnings, no compiler remarks. The build must be completely clean.
 - **Round-trip verification.** Every test suite must include round-trip tests: Mode B → Mode C → Mode B must produce identical output. Mode A → Mode B → Mode A must produce identical output.
@@ -36,18 +37,22 @@ The agent may propose the specific apps creatively and discuss choices with the 
 2. **A SwiftUI app** — demonstrates views, state management, navigation, modifiers, shapes, colors, gestures, and animations.
 3. **A Swift Charts app** — demonstrates data visualization with Charts framework wrappers.
 4. **A SwiftData app** — demonstrates persistence with @Model, ModelContainer, FetchDescriptor, and queries.
-5. **A Gikh code viewer** — a native macOS app for browsing Gikh projects. File tree sidebar, syntax-highlighted `.gikh` source display, and tiling of multiple files in a single window.
+5. **A Gikh code viewer** — a document-based macOS app that opens `.gikh` files. Renders code RTL with syntax highlighting. File tree sidebar and multi-file tiling in a single window.
 
 The ביבליאָטעק wrappers only need to cover enough framework surface for these example apps to be written 100% in Yiddish. Comprehensive framework coverage is a future goal, not a requirement for this initial version.
 
-The apps may be small/trivial in scope but must be fully functional, build without warnings, and pass all tests. They may be written in English first and then converted to Yiddish via the transpiler, or written directly in Yiddish — either path is acceptable as long as the final distributed form is Mode B `.gikh` files.
+Every example app must be:
+- **Entirely in Yiddish** — all `.gikh` source files are RTL, no English identifiers anywhere. No exceptions.
+- **An Xcode project** — generated via xcodegen (`project.yml` in each example directory).
+- **A proper .app** — GUI apps compile into `.app` packages; the CLI tool compiles into an executable.
+- **Fully functional** — builds without warnings, passes all tests.
 
 ### Development Phases
 
 The agent should approach the build in this order:
 
-1. **Phase 1: SwiftPM build plugin (stub)** — Wire the transpiler as a build plugin from the start, so `.gikh` files compile seamlessly throughout development. Start with a minimal stub that transpiles `.gikh` → Mode C and feeds the result to the compiler. If SwiftPM's plugin API supports it, pipe the generated Swift directly to the compiler without writing intermediate files to disk.
-2. **Phase 2: Core transpiler** — Scanner, Translator, BiDi Annotator, BiMap, Lexicon loader, CLI. Dictionary files (starting with keywords, then expanding). Round-trip tests.
+1. **Phase 1: Compiler integration (stub)** — Wire the full pipeline into the Swift toolchain before writing any transpilation logic. The stub passes `.gikh` input through unchanged (meaning Phase 1 code is Mode C — valid Swift with Yiddish identifiers). This proves the end-to-end integration: build plugin accepts `.gikh` files, feeds content to the compiler, compiles and links ביבליאָטעק object code into the final binary. Everything works before any B→C conversion exists.
+2. **Phase 2: Core transpiler** — Scanner, Translator, BiDi Annotator, BiMap, Lexicon loader, CLI. Dictionary files (starting with keywords, then expanding). Round-trip tests. Once complete, the Phase 1 stub is replaced with real B→C transpilation — `.gikh` files can now contain actual Mode B (RTL Yiddish) code.
 3. **Phase 3: ביבליאָטעק foundation** — stdlib typealiases and wrappers, יסוד (Foundation) wrappers, global function wrappers. Expand dictionaries with user-approved translations.
 4. **Phase 4: Scan pipeline** — The external codebase scanner that identifies untranslated symbols without modifying the target project.
 5. **Phase 5: Framework wrappers (scoped to examples)** — Translate enough SwiftUI, CoreGraphics, SwiftData, Charts, and other framework surface for the example apps to be 100% Yiddish. Comprehensive coverage is a future goal.
@@ -67,18 +72,18 @@ The name גיך means "quick/fast" in Yiddish — a direct conceptual parallel t
 
 ### Mode A: Full English
 
-Standard Swift. LTR. No BiDi characters. English keywords, English identifiers. This is not stored in version control or distributed — it exists only as a debug/inspection artifact or as an entry point for integrating existing Swift code into a Gikh project.
+Standard Swift. Already legible to any English-speaking developer. This is either source code to be converted into a Gikh project, or standard Swift code that needs no further processing. Not stored in version control or distributed as part of a Gikh project.
 
 - **Extension:** `.swift`
 - **Base direction:** LTR
 - **Keywords:** English
 - **Identifiers:** English
 - **BiDi markers:** None
-- **Purpose:** Debug inspection, onboarding existing code
+- **Purpose:** Source to be imported into Gikh, or rendered output for English-speaking readers
 
 ### Mode B: Full Yiddish
 
-The human-readable, distributable source of truth. RTL base direction. Yiddish keywords and identifiers. Mirrored characters (brackets, braces, parens) render naturally via Unicode's RTL mirroring. Slashes are flipped relative to Mode C so they lean correctly when rendered right-to-left. The transpiler flips all slashes in code tokens, leaving strings, comments, and regex literals untouched. This mode is about readability first and foremost.
+The human-readable, distributable source of truth. Optimized for the Yiddish-reading developer — every design decision in this mode prioritizes human legibility over mechanical simplicity. RTL base direction. Yiddish keywords and identifiers. Mirrored characters (brackets, braces, parens) render naturally via Unicode's RTL mirroring. Slashes are flipped so they lean correctly in RTL. The transpiler uses syntactically-aware conversion (not string find-and-replace) to handle slashes, BiDi annotations, and other RTL concerns correctly in context, leaving strings, comments, and regex literals untouched.
 
 - **Extension:** `.gikh`
 - **Base direction:** RTL
@@ -90,14 +95,14 @@ The human-readable, distributable source of truth. RTL base direction. Yiddish k
 
 ### Mode C: Hybrid (Compilation Format)
 
-English keywords with Yiddish identifiers. LTR base direction. No BiDi characters. This is the format the Swift compiler sees. The Yiddish identifiers survive into compiler diagnostics, so error messages reference the same names the developer uses in Mode B.
+Meant for the compiler, not humans. Shares all keywords, operators, and syntactic characters with standard Swift — the only difference from Mode A is that identifiers are in Yiddish. This keeps the conversion rules as simple as possible: swap keywords, strip BiDi markers, flip slashes back. No complex logic needed. The Yiddish identifiers survive into compiler diagnostics, so error messages reference the same names the developer uses in Mode B.
 
-- **Extension:** `.swift` (generated, gitignored)
+- **Extension:** `.swift` (transient, in-memory only)
 - **Base direction:** LTR
 - **Keywords:** English
 - **Identifiers:** Yiddish
 - **BiDi markers:** None
-- **Purpose:** Compiler input (auto-generated from Mode B by the build plugin)
+- **Purpose:** Compiler input (generated in memory from Mode B, never written to disk during builds)
 
 ### Mode relationships
 
@@ -133,30 +138,52 @@ All three modes are 1:1 mappings. Any mode can convert to any other mode lossles
 
 ## Slash Handling in Mode B
 
-In Mode B (RTL), slashes are flipped — `/` becomes `\` and `\` becomes `/` — because they visually lean the wrong way in right-to-left rendering. The transpiler flips all slashes in code tokens during mode conversion. String literals, comments, and regex literals are opaque tokens and are never modified.
+In Mode B (RTL), slashes are flipped — `/` becomes `\` and `\` becomes `/` — because they visually lean the wrong way in right-to-left rendering. The transpiler flips all slashes in code tokens during mode conversion. String literal text content, comments, and regex literals are opaque and never modified. However, string interpolation delimiters (`\(...)`) are syntactic — the backslash in them is flipped like any other slash, so `\(expr)` becomes `/(expr)` in Mode B.
 
 ### How it looks in RTL
 
 Division operator — the `/` in Mode C becomes `\` in Mode B so it leans correctly in RTL:
 
-<div dir="rtl"><pre>
-לאָז תּוצאָה = א \ ב
-</pre></div>
+**Mode B:**
 
-Mode C (LTR):
+<div dir="rtl">
+
+```gikh
+לאָז תּוצאָה = א \ ב
+```
+
+</div>
+
+**Mode C:**
 ```swift
 let תּוצאָה = א / ב
 ```
 
+**Mode A:**
+```swift
+let result = a / b
+```
+
 Keypath prefix — the `\` in Mode C becomes `/` in Mode B:
 
-<div dir="rtl"><pre>
-לאָז וועג = /מענטש.נאָמען
-</pre></div>
+**Mode B:**
 
-Mode C (LTR):
+<div dir="rtl">
+
+```gikh
+לאָז וועג = /מענטש.נאָמען
+```
+
+</div>
+
+**Mode C:**
 ```swift
 let וועג = \מענטש.נאָמען
+```
+
+**Mode A:**
+```swift
+let path = \Person.name
 ```
 
 ---
@@ -226,7 +253,14 @@ keywords:
 
 ### Dictionary 2: ביבליאָטעק Mappings
 
-Not a hand-maintained YAML — derived from the ביבליאָטעק source files. Every `typealias` and `@_transparent` wrapper in ביבליאָטעק implicitly defines a dictionary entry. The transpiler reads these at build time. Representative examples of what the source files define:
+Dictionary 2 has two sections:
+
+1. **Core defaults** — baked into the pre-built object code that ships with the Gikh tool. These are the ביבליאָטעק source files in the main package.
+2. **Project extensions** — optional `.swift` files in the project's own `ביבליאָטעק/` directory, providing wrappers for framework symbols not yet covered by core.
+
+The union of both sections forms Dictionary 2. Not a hand-maintained YAML — derived from the source files. Every `typealias` and `@_transparent` wrapper implicitly defines a dictionary entry. A YAML equivalent can be derived where needed, but B ↔ C conversion does not require it — the `.swift` extension files provide all the Yiddish symbols natively in Swift.
+
+Representative examples of what the source files define:
 
 **stdlib types and members:**
 ```
@@ -687,12 +721,15 @@ struct Scanner {
     }
 
     /// String literals: single-line, multi-line, raw, interpolation.
-    /// All returned as a single opaque token.
+    /// Text content is opaque, but interpolation delimiters (\( and ))
+    /// are syntactic — the backslash in \( is flipped during mode conversion.
     private mutating func scanStringLiteral(
         _ tokens: inout [Token]
     ) -> Bool {
-        // Handles all four forms, tracks nesting for
-        // interpolations, returns entire literal as one opaque token
+        // Handles all four forms, tracks nesting for interpolations.
+        // Returns text segments as opaque tokens, interpolation
+        // delimiters as flippable tokens, interpolated expressions
+        // as normal scannable code.
     }
 }
 ```
@@ -876,6 +913,8 @@ swiftc -emit-sil -O MyFile.swift -I ביבליאָטעק | grep פֿילטער
 
 ### Representative wrappers
 
+Every symbol is translated — type names, function names, parameter labels, property names. In Mode B, a developer never sees an English identifier.
+
 ```swift
 // ביבליאָטעק/טיפּן/סטרינג.swift
 import Foundation
@@ -885,7 +924,10 @@ public typealias סטרינג = String
 extension String {
     @_transparent public var צאָל_פֿון: Int { count }
     @_transparent public var איז_ליידיק: Bool { isEmpty }
-    @_transparent public mutating func צולייגן(_ element: Character) { append(element) }
+    @_transparent public mutating func צולייגן(_ עלעמענט: Character) { append(עלעמענט) }
+    @_transparent public func מיט_פּרעפֿיקס(_ פּרעפֿיקס: סטרינג) -> Bool { hasPrefix(פּרעפֿיקס) }
+    @_transparent public func מיט_סופֿיקס(_ סופֿיקס: סטרינג) -> Bool { hasSuffix(סופֿיקס) }
+    @_transparent public func פֿאַרבינדן(טרענער: סטרינג) -> סטרינג { self }  // placeholder
 }
 ```
 
@@ -896,9 +938,11 @@ public typealias מאַסיוו = Array
 extension Array {
     @_transparent public var צאָל_פֿון: Int { count }
     @_transparent public var איז_ליידיק: Bool { isEmpty }
-    @_transparent public mutating func צולייגן(_ newElement: Element) { append(newElement) }
-    @_transparent public func פֿילטער(_ isIncluded: (Element) throws -> Bool) rethrows -> [Element] { try filter(isIncluded) }
-    @_transparent public func מאַפּע<T>(_ transform: (Element) throws -> T) rethrows -> [T] { try map(transform) }
+    @_transparent public mutating func צולייגן(_ נײַ_עלעמענט: Element) { append(נײַ_עלעמענט) }
+    @_transparent public func פֿילטער(_ איז_אַרײַנגענומען: (Element) throws -> Bool) rethrows -> [Element] { try filter(איז_אַרײַנגענומען) }
+    @_transparent public func מאַפּע<T>(_ איבערמאַכן: (Element) throws -> T) rethrows -> [T] { try map(איבערמאַכן) }
+    @_transparent public func רעדוצירן<T>(_ אָנהייב_ווערט: T, _ קאָמבינירן: (T, Element) throws -> T) rethrows -> T { try reduce(אָנהייב_ווערט, קאָמבינירן) }
+    @_transparent public func סאָרטירט(דורך זענען_אין_סדר: (Element, Element) throws -> Bool) rethrows -> [Element] { try sorted(by: זענען_אין_סדר) }
 }
 ```
 
@@ -908,8 +952,21 @@ import Foundation
 
 public struct נעץ_זיצונג {
     @usableFromInline internal let _session: URLSession
-    @_transparent public init(קאָנפֿיגוראַציע: URLSessionConfiguration = .default) { _session = URLSession(configuration: קאָנפֿיגוראַציע) }
-    @_transparent public func דאַטן(פֿון url: URL) async throws -> (Data, URLResponse) { try await _session.data(from: url) }
+
+    @_transparent
+    public init(קאָנפֿיגוראַציע: URLSessionConfiguration = .default) {
+        _session = URLSession(configuration: קאָנפֿיגוראַציע)
+    }
+
+    @_transparent
+    public func דאַטן(פֿון אַדרעס: URL) async throws -> (Data, URLResponse) {
+        try await _session.data(from: אַדרעס)
+    }
+
+    @_transparent
+    public func דאַטן(פֿאַר בקשה: URLRequest) async throws -> (Data, URLResponse) {
+        try await _session.data(for: בקשה)
+    }
 }
 ```
 
@@ -936,11 +993,11 @@ public typealias טיילער = Divider
 import SwiftUI
 
 extension View {
-    @_transparent public func פּאַדינג(_ edges: Edge.Set = .all, _ length: CGFloat? = nil) -> some View { self.padding(edges, length) }
-    @_transparent public func אונטערלייג(_ style: some ShapeStyle) -> some View { self.background(style) }
-    @_transparent public func פֿאָרגרונט_פֿאַרב(_ color: Color) -> some View { self.foregroundStyle(color) }
-    @_transparent public func שריפֿט(_ font: Font?) -> some View { self.font(font) }
-    @_transparent public func בלעטל_טיטל(_ title: String) -> some View { self.navigationTitle(title) }
+    @_transparent public func פּאַדינג(_ זײַטן: Edge.Set = .all, _ לענג: CGFloat? = nil) -> some View { self.padding(זײַטן, לענג) }
+    @_transparent public func אונטערלייג(_ סטיל: some ShapeStyle) -> some View { self.background(סטיל) }
+    @_transparent public func פֿאָרגרונט_פֿאַרב(_ פֿאַרב: Color) -> some View { self.foregroundStyle(פֿאַרב) }
+    @_transparent public func שריפֿט(_ שריפֿט: Font?) -> some View { self.font(שריפֿט) }
+    @_transparent public func בלעטער_טיטל(_ טיטל: String) -> some View { self.navigationTitle(טיטל) }
 }
 ```
 
@@ -965,8 +1022,8 @@ extension Color {
 ```swift
 // ביבליאָטעק/גלאָבאַל/דרוק.swift
 @_transparent
-public func דרוק(_ items: Any..., separator: String = " ", terminator: String = "\n") {
-    print(items.map { "\($0)" }.joined(separator: separator), terminator: terminator)
+public func דרוק(_ זאַכן: Any..., טרענער: String = " ", סוף: String = "\n") {
+    print(זאַכן.map { "\($0)" }.joined(separator: טרענער), terminator: סוף)
 }
 ```
 
@@ -1090,22 +1147,27 @@ gikh bridge      --generate      # regenerate ביבליאָטעק wrappers
 ├── Examples/
 │   ├── CLITool/                  # Example: CLI application
 │   │   ├── לעקסיקאָן.yaml        # Dictionary 3 for this example
+│   │   ├── project.yml           # xcodegen spec
 │   │   ├── Package.swift
-│   │   └── Sources/
+│   │   └── Sources/              # .gikh files only (100% Yiddish)
 │   ├── SwiftUIApp/               # Example: SwiftUI application
 │   │   ├── לעקסיקאָן.yaml
+│   │   ├── project.yml
 │   │   ├── Package.swift
 │   │   └── Sources/
 │   ├── ChartsApp/                # Example: Swift Charts
 │   │   ├── לעקסיקאָן.yaml
+│   │   ├── project.yml
 │   │   ├── Package.swift
 │   │   └── Sources/
 │   ├── DataApp/                  # Example: SwiftData
 │   │   ├── לעקסיקאָן.yaml
+│   │   ├── project.yml
 │   │   ├── Package.swift
 │   │   └── Sources/
-│   └── CodeViewer/               # Example: Gikh code viewer (macOS)
+│   └── CodeViewer/               # Example: document-based Gikh code viewer (macOS)
 │       ├── לעקסיקאָן.yaml
+│       ├── project.yml
 │       ├── Package.swift
 │       └── Sources/
 │
@@ -1132,17 +1194,327 @@ A Gikh project on disk:
 MyProject/
 ├── לעקסיקאָן.yaml               # Dictionary 3: project identifiers (A ↔ B only)
 ├── Package.swift
+├── project.yml                  # xcodegen spec
 ├── Sources/
 │   ├── מענטש.gikh               # Mode B — source of truth
 │   ├── אײַנשטעלונגען.gikh
 │   └── ראַשי.gikh               # main
-├── ביבליאָטעק/                   # Optional: project-local framework wrappers
-│   └── ...                      # typealiases/wrappers for symbols not yet in core
-└── .gikh/
-    └── generated/               # gitignored
-        ├── מענטש.swift           # Mode C — auto-generated for compiler
-        ├── אײַנשטעלונגען.swift
-        └── ראַשי.swift
+└── ביבליאָטעק/                   # Optional: project-local framework wrappers
+    └── ...                      # typealiases/wrappers for symbols not yet in core
 ```
 
-At build time, the build plugin uses keywords (compiled into the transpiler) and ביבליאָטעק mappings (derived from source files) to transpile `.gikh` → Mode C. For developer workflows (A ↔ B), it also loads the project dictionary from `./לעקסיקאָן.yaml`. The `.gikh` files are the source of truth. If SwiftPM's plugin API supports it, the transpiler pipes generated Swift directly to the compiler without writing intermediate files to disk. Otherwise, Mode C output in `.gikh/generated/` is regenerated on every build and gitignored. Mode A output is never persisted.
+There is no `.gikh/generated/` directory. The compiler integration transpiles `.gikh` → Mode C in memory and feeds it directly to the Swift compiler. No intermediate `.swift` files are written to disk during compilation. Mode A or Mode C copies of the code exist only for human consumption — the `gikh to-english` and `gikh to-hybrid` CLI commands produce them on demand, not as build artifacts.
+
+At build time, the build plugin uses keywords (compiled into the transpiler) and ביבליאָטעק mappings (derived from source files) to transpile `.gikh` → Mode C. It compiles and links core ביבליאָטעק (shipped as pre-built object code with the tool) into the final binary. If the project has a local `ביבליאָטעק/` directory, the compiler also builds and links those extensions. Tools accept `.gikh` files directly — no conversion step required.
+
+---
+
+## Pure Gikh Code Examples
+
+Each example shows all three modes side by side: Mode B (what the Yiddish developer writes and reads), Mode C (what the compiler sees), and Mode A (full English).
+
+**Note on string literals:** The transpiler treats the text content of string literals as opaque — it passes through unchanged in all three modes. The Mode A examples below show Yiddish text inside strings because that's what round-tripping from Mode B produces. In practice, Mode A code written by an English-speaking developer would have English strings.
+
+However, string interpolation delimiters (`\(...)`) are syntactic, and the backslash in them is flipped like any other slash. In Mode B, `\(expr)` becomes `/(expr)`. The transpiler recognizes interpolation boundaries and flips the escape character while leaving the string content and the interpolated expression untouched.
+
+### Hello World
+
+**Mode B** (.gikh — source of truth, RTL):
+
+<div dir="rtl">
+
+```gikh
+אימפּאָרט יסוד
+
+דרוק("!שלום וועלט")
+```
+
+</div>
+
+**Mode C** (compiler input — English keywords, Yiddish identifiers):
+```swift
+import Foundation
+
+דרוק("!שלום וועלט")
+```
+
+**Mode A** (full English):
+```swift
+import Foundation
+
+print("!שלום וועלט")
+```
+
+### A struct with methods
+
+**Mode B:**
+
+<div dir="rtl">
+
+```gikh
+סטרוקטור מענטש {
+    לאָז נאָמען: סטרינג
+    לאָז עלטער: צאָל
+
+    פֿונקציע באַשרײַב() -> סטרינג {
+        צוריק "/(נאָמען) איז /(עלטער) יאָר אַלט"
+    }
+
+    פֿונקציע איז_דערוואַקסן() -> באָאָל {
+        צוריק עלטער >= 18
+    }
+}
+
+לאָז יענקל = מענטש(נאָמען: "יענקל", עלטער: 30)
+דרוק(יענקל.באַשרײַב())
+```
+
+</div>
+
+**Mode C:**
+```swift
+struct מענטש {
+    let נאָמען: סטרינג
+    let עלטער: צאָל
+
+    func באַשרײַב() -> סטרינג {
+        return "\(נאָמען) איז \(עלטער) יאָר אַלט"
+    }
+
+    func איז_דערוואַקסן() -> באָאָל {
+        return עלטער >= 18
+    }
+}
+
+let יענקל = מענטש(נאָמען: "יענקל", עלטער: 30)
+דרוק(יענקל.באַשרײַב())
+```
+
+**Mode A:**
+```swift
+struct Person {
+    let name: String
+    let age: Int
+
+    func describe() -> String {
+        return "\(name) איז \(age) יאָר אַלט"
+    }
+
+    func isAdult() -> Bool {
+        return age >= 18
+    }
+}
+
+let yankl = Person(name: "יענקל", age: 30)
+print(yankl.describe())
+```
+
+### Array operations with closures (demonstrating slash flip)
+
+**Mode B:**
+
+<div dir="rtl">
+
+```gikh
+לאָז צאָלן = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+לאָז גראַדע = צאָלן.פֿילטער { $0 % 2 == 0 }
+לאָז סכום = גראַדע.רעדוצירן(0) { $0 + $1 }
+
+דרוק("סכום פֿון גראַדע צאָלן: /(סכום)")
+```
+
+</div>
+
+**Mode C:**
+```swift
+let צאָלן = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+let גראַדע = צאָלן.פֿילטער { $0 % 2 == 0 }
+let סכום = גראַדע.רעדוצירן(0) { $0 + $1 }
+
+דרוק("סכום פֿון גראַדע צאָלן: \(סכום)")
+```
+
+**Mode A:**
+```swift
+let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+let evens = numbers.filter { $0 % 2 == 0 }
+let sum = evens.reduce(0) { $0 + $1 }
+
+print("סכום פֿון גראַדע צאָלן: \(sum)")
+```
+
+### A SwiftUI view
+
+**Mode B:**
+
+<div dir="rtl">
+
+```gikh
+אימפּאָרט באַניצער_פֿלאַך
+
+סטרוקטור באַגריסונג_בליק: בליק {
+    @צושטאַנד פּריוואַט באַשטימען נאָמען = ""
+
+    באַשטימען גוף: עטלעכע בליק {
+        שטאַפּל_וו(אויסריכטונג: .צענטער, אָפּשטאַנד: 20) {
+            טעקסט("!שלום וועלט")
+                .שריפֿט(.טיטל)
+                .פֿאָרגרונט_פֿאַרב(.בלוי)
+
+            קנעפּל("דריק מיך") {
+                דרוק("!געדריקט")
+            }
+            .פּאַדינג()
+            .אונטערלייג(.ראָזע)
+        }
+    }
+}
+```
+
+</div>
+
+**Mode C:**
+```swift
+import SwiftUI
+
+struct באַגריסונג_בליק: בליק {
+    @צושטאַנד private var נאָמען = ""
+
+    var גוף: some בליק {
+        שטאַפּל_וו(אויסריכטונג: .צענטער, אָפּשטאַנד: 20) {
+            טעקסט("!שלום וועלט")
+                .שריפֿט(.טיטל)
+                .פֿאָרגרונט_פֿאַרב(.בלוי)
+
+            קנעפּל("דריק מיך") {
+                דרוק("!געדריקט")
+            }
+            .פּאַדינג()
+            .אונטערלייג(.ראָזע)
+        }
+    }
+}
+```
+
+**Mode A:**
+```swift
+import SwiftUI
+
+struct GreetingView: View {
+    @State private var name = ""
+
+    var body: some View {
+        VStack(alignment: .center, spacing: 20) {
+            Text("!שלום וועלט")
+                .font(.title)
+                .foregroundStyle(.blue)
+
+            Button("דריק מיך") {
+                print("!געדריקט")
+            }
+            .padding()
+            .background(.pink)
+        }
+    }
+}
+```
+
+### Async networking (demonstrating slash flip on division)
+
+**Mode B:**
+
+<div dir="rtl">
+
+```gikh
+פֿונקציע הייבן_דאַטן(פֿון אַדרעס: סטרינג) אַסינכראָן וואַרפֿט -> דאַטן {
+    לאָז זיצונג = נעץ_זיצונג()
+    לאָז (דאַטן, _) = פּרובירן וואַרטן זיצונג.דאַטן(פֿון: URL(סטרינג: אַדרעס)!)
+    לאָז גרייס = דאַטן.צאָל_פֿון \ 1024
+    דרוק("באַקומען /(גרייס) קב")
+    צוריק דאַטן
+}
+```
+
+</div>
+
+**Mode C:**
+```swift
+func הייבן_דאַטן(פֿון אַדרעס: סטרינג) async throws -> דאַטן {
+    let זיצונג = נעץ_זיצונג()
+    let (דאַטן, _) = try await זיצונג.דאַטן(פֿון: URL(סטרינג: אַדרעס)!)
+    let גרייס = דאַטן.צאָל_פֿון / 1024
+    דרוק("באַקומען \(גרייס) קב")
+    return דאַטן
+}
+```
+
+**Mode A:**
+```swift
+func fetchData(from address: String) async throws -> Data {
+    let session = URLSession()
+    let (data, _) = try await session.data(from: URL(string: address)!)
+    let size = data.count / 1024
+    print("באַקומען \(size) קב")
+    return data
+}
+```
+
+Note: in the networking example, the `\` in Mode B `דאַטן.צאָל_פֿון \ 1024` is the division operator — slashes are flipped in RTL. In Mode C and Mode A it's `/` as usual. Similarly, the string interpolation `/(גרייס)` in Mode B becomes `\(גרייס)` in Mode C and Mode A.
+
+---
+
+## Requirements
+
+These requirements supplement the agent instructions at the top of this document.
+
+### ביבליאָטעק completeness
+
+Every symbol must be fully translated in Mode B. This means:
+- Every function and method has every parameter label translated.
+- Every class and struct has every stored property and computed property translated.
+- Every enum has every case and associated value label translated.
+- Every protocol has every requirement translated.
+- No English identifiers appear in Mode B code. None.
+
+### Compiler integration
+
+The compiler integration performs two steps:
+
+1. **Transpile** — convert `.gikh` (Mode B) to Mode C by swapping keywords and ביבליאָטעק symbols. This produces valid Swift code with Yiddish identifiers.
+2. **Link** — link the pre-built ביבליאָטעק object code into the final binary so all Yiddish typealiases and wrappers resolve.
+
+ביבליאָטעק must be compiled into object code as part of building the Gikh tool itself. This object code ships with the tool and is linked into every Gikh program's output.
+
+When a project has its own `ביבליאָטעק/` extensions, the compiler integration must accept these as a parameter, build them into object code, and link them into the final result alongside core ביבליאָטעק.
+
+The end result: `gikh compile main.gikh` produces a working program. No manual steps.
+
+### No generated artifacts
+
+There is no concept of keeping generated `.swift` files on disk as part of the build process. The transpiler produces Mode C in memory and passes it to the compiler. Mode A and Mode C copies exist only for human consumption, produced on demand by `gikh to-english` and `gikh to-hybrid`.
+
+All tools must accept `.gikh` files as input without complaint.
+
+### Example apps as Xcode projects
+
+All example projects must also be Xcode projects, generated via xcodegen (`project.yml`). GUI apps must compile into `.app` packages. The CLI tool compiles into an executable.
+
+### Test-first development
+
+All tests must be written before any implementation code. Once a test is written, it must not be substantially modified except to fix bugs in the test itself. The test suite is the contract.
+
+### 100% Yiddish in example apps
+
+All example apps must be entirely RTL Yiddish in their `.gikh` source files. Every identifier, every parameter label, every string that represents a UI element — all in Yiddish. No exceptions. This is the proof that the system works end to end.
+
+### Code viewer requirements
+
+The code viewer example app must be:
+- A document-based macOS app that opens `.gikh` files directly.
+- Syntax highlighting of Gikh code (keywords, identifiers, strings, comments in distinct colors).
+- Proper RTL rendering of all code content.
+- File tree sidebar for browsing project directories.
+- Multi-file tiling in a single window.
