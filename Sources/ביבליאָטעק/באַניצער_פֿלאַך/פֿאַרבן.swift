@@ -1,5 +1,7 @@
 import SwiftUI
 
+public typealias פֿאַרב = Color
+
 extension Color {
     @_transparent public static var רויט: Color { .red }
     @_transparent public static var בלוי: Color { .blue }

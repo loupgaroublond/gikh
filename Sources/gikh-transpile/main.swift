@@ -7,9 +7,9 @@ import GikhCore
 // Usage: gikh-transpile <input.gikh> <output.swift>
 
 let args = CommandLine.arguments
-guard args.count == 3 else {
+guard args.count >= 3 else {
     FileHandle.standardError.write(
-        Data("Usage: gikh-transpile <input.gikh> <output.swift>\n".utf8)
+        Data("Usage: gikh-transpile <input.gikh> <output.swift> [bibliotek-path]\n".utf8)
     )
     exit(1)
 }
@@ -20,11 +20,27 @@ let outputPath = args[2]
 do {
     let source = try String(contentsOfFile: inputPath, encoding: .utf8)
 
-    // Build a compilation lexicon (keywords only; bibliotek empty if not present).
-    // The bibliotek directory, if it exists, lives next to the package root.
-    // For now we resolve it relative to the input file's directory.
-    let inputDir = URL(fileURLWithPath: inputPath).deletingLastPathComponent().path
-    let bibliotekPath = (inputDir as NSString).appendingPathComponent("ביבליאָטעק")
+    // Resolve the ביבליאָטעק source directory.
+    // Priority: (1) explicit third argument, (2) search up from input file for Sources/ביבליאָטעק.
+    let bibliotekPath: String
+    if args.count >= 4 {
+        bibliotekPath = args[3]
+    } else {
+        // Walk up from the input file directory looking for Sources/ביבליאָטעק
+        var dir = URL(fileURLWithPath: inputPath).deletingLastPathComponent()
+        var found: String?
+        for _ in 0..<10 {
+            let candidate = dir.appendingPathComponent("Sources/ביבליאָטעק").path
+            if FileManager.default.fileExists(atPath: candidate) {
+                found = candidate
+                break
+            }
+            let parent = dir.deletingLastPathComponent()
+            if parent.path == dir.path { break }
+            dir = parent
+        }
+        bibliotekPath = found ?? dir.appendingPathComponent("ביבליאָטעק").path
+    }
     let lexicon = try Lexicon.forCompilation(bibliotekPath: bibliotekPath)
 
     // Run the B→C pipeline: Yiddish keywords → English, strip BiDi isolates.

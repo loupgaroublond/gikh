@@ -32,8 +32,8 @@ public struct Translator {
                 return .keyword(translated, range)
 
             case .identifier(let word, let range):
-                guard mode == .full else { return token }
-                let translated = translateIdentifier(word)
+                guard mode == .full || mode == .compilation else { return token }
+                let translated = translateIdentifier(word, includeProjectIdentifiers: mode == .full)
                 return .identifier(translated, range)
 
             default:
@@ -69,16 +69,20 @@ public struct Translator {
     /// Lookup priority: `bibliotek` → `identifiers`.
     /// (Keywords are not searched here — they are already handled above.)
     /// Any identifier not found in any tier is returned unchanged (passthrough).
-    private func translateIdentifier(_ word: String) -> String {
-        let maps = [lexicon.bibliotek, lexicon.identifiers]
+    ///
+    /// - Parameter includeProjectIdentifiers: When `false` (`.compilation` mode),
+    ///   only bibliotek mappings are consulted; project identifiers are preserved.
+    private func translateIdentifier(_ word: String, includeProjectIdentifiers: Bool = true) -> String {
+        var maps = [lexicon.bibliotek]
+        if includeProjectIdentifiers {
+            maps.append(lexicon.identifiers)
+        }
 
         for map in maps {
             switch direction {
             case .toEnglish:
-                // Yiddish identifier → English: BiMap stores Yiddish→English
                 if let v = map.toValue(word) { return v }
             case .toYiddish:
-                // English identifier → Yiddish: look up English as value → get Yiddish
                 if let k = map.toKey(word) { return k }
             }
         }

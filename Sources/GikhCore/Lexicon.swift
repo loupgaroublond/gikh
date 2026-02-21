@@ -113,6 +113,14 @@ public struct Lexicon {
         for (idx, line) in lines.enumerated() {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
 
+            // Comment-based mapping: `// mapping: יידיש = english`
+            // Used for protocol method names and parameter labels that cannot
+            // be expressed as typealiases or wrapper functions.
+            if let pair = parseMappingComment(trimmed) {
+                pairs.append(pair)
+                continue
+            }
+
             // typealias pattern: `[public] typealias <Yiddish> = <English>`
             if let pair = parseTypealias(trimmed) {
                 pairs.append(pair)
@@ -131,6 +139,21 @@ public struct Lexicon {
         }
 
         return pairs
+    }
+
+    /// Parse `// mapping: יידיש = english` comments.
+    /// These provide explicit Yiddish↔English mappings for protocol method names,
+    /// parameter labels, and other identifiers that cannot be expressed as
+    /// typealiases or wrapper functions.
+    private static func parseMappingComment(_ line: String) -> (String, String)? {
+        guard line.hasPrefix("// mapping: ") else { return nil }
+        let rest = String(line.dropFirst("// mapping: ".count))
+        let parts = rest.components(separatedBy: " = ")
+        guard parts.count == 2 else { return nil }
+        let yiddish = parts[0].trimmingCharacters(in: .whitespaces)
+        let english = parts[1].trimmingCharacters(in: .whitespaces)
+        guard !yiddish.isEmpty, !english.isEmpty else { return nil }
+        return (yiddish, english)
     }
 
     /// Parse extension member declarations (func/var/static var) and global
@@ -182,7 +205,17 @@ public struct Lexicon {
             let afterBraceTrimmed = afterBrace.trimmingCharacters(in: .whitespaces)
             if afterBraceTrimmed.isEmpty || afterBraceTrimmed == "}" {
                 // Body is on next line
-                bodySource = nextLine ?? ""
+                let next = (nextLine ?? "").trimmingCharacters(in: .whitespaces)
+                // Multi-line get/set computed property: extract from inside `get { ... }`
+                if next.hasPrefix("get ") || next.hasPrefix("get{") {
+                    if let innerOpen = next.firstIndex(of: "{") {
+                        bodySource = String(next[next.index(after: innerOpen)...])
+                    } else {
+                        return nil
+                    }
+                } else {
+                    bodySource = next
+                }
             } else {
                 bodySource = String(afterBrace)
             }

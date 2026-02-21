@@ -211,6 +211,50 @@ struct LexiconForCompilationTests {
         #expect(lexicon.identifiers.count == 0)
     }
 
+    @Test("forCompilation loads comment-based mappings from bibliotek")
+    func forCompilationLoadsCommentMappings() throws {
+        let dir = try makeTempDir(files: [
+            "doc.swift": """
+            public typealias דאָקומענט = NSDocument
+
+            // mapping: מקור = from
+            // mapping: גוף = body
+            // mapping: פֿון_טיפּ = ofType
+            """
+        ])
+        defer { try? FileManager.default.removeItem(at: dir) }
+
+        let lexicon = try Lexicon.forCompilation(bibliotekPath: dir.path)
+
+        #expect(lexicon.bibliotek.toValue("מקור") == "from")
+        #expect(lexicon.bibliotek.toValue("גוף") == "body")
+        #expect(lexicon.bibliotek.toValue("פֿון_טיפּ") == "ofType")
+        #expect(lexicon.bibliotek.toValue("דאָקומענט") == "NSDocument")
+    }
+
+    @Test("B→C transpilation translates comment-based mappings")
+    func compilationTranslatesCommentMappings() throws {
+        let dir = try makeTempDir(files: [
+            "doc.swift": """
+            // mapping: מקור = from
+            // mapping: פֿון_טיפּ = ofType
+            """
+        ])
+        defer { try? FileManager.default.removeItem(at: dir) }
+
+        let lexicon = try Lexicon.forCompilation(bibliotekPath: dir.path)
+        let source = "פֿונקציע לייענען(מקור וועג: אַדרעס, פֿון_טיפּ נאָמען: סטרינג)"
+        let output = Transpiler.transpile(source, lexicon: lexicon, target: .modeC)
+
+        #expect(output.contains("from"))
+        #expect(output.contains("ofType"))
+        #expect(!output.contains("מקור"))
+        #expect(!output.contains("פֿון_טיפּ"))
+        // Project identifiers preserved
+        #expect(output.contains("וועג"))
+        #expect(output.contains("נאָמען"))
+    }
+
     @Test("forCompilation with no bibliotek path returns lexicon with empty bibliotek")
     func forCompilationWithNoBibliotek() throws {
         let lexicon = try Lexicon.forCompilation(bibliotekPath: "/nonexistent")
@@ -426,6 +470,30 @@ struct LexiconExtensionMemberTests {
         #expect(map.toValue("צאָל_פֿון") == "count")
         #expect(map.toValue("איז_ליידיק") == "isEmpty")
         #expect(map.toValue("קליין_אותיות") == "lowercased")
+    }
+
+    @Test("Derive comment-based mapping: // mapping: יידיש = english")
+    func deriveCommentBasedMappings() throws {
+        let source = """
+        public typealias דאָקומענט = NSDocument
+
+        // mapping: גוף = body
+        // mapping: מקור = from
+        // mapping: פֿון_טיפּ = ofType
+        """
+        let dir = try makeTempDir(files: ["test.swift": source])
+        defer { try? FileManager.default.removeItem(at: dir) }
+
+        let map = try Lexicon.deriveBibliotekMappings(from: dir.path)
+        // Typealias
+        #expect(map.toValue("דאָקומענט") == "NSDocument")
+        // Comment-based mappings
+        #expect(map.toValue("גוף") == "body")
+        #expect(map.toValue("מקור") == "from")
+        #expect(map.toValue("פֿון_טיפּ") == "ofType")
+        // Reverse lookups
+        #expect(map.toKey("body") == "גוף")
+        #expect(map.toKey("from") == "מקור")
     }
 
     @Test("Derive static property mappings from file")

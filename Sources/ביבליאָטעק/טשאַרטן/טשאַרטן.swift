@@ -1,4 +1,4 @@
-import Charts
+@_exported import Charts
 import SwiftUI
 
 // MARK: - Chart container typealias
@@ -59,3 +59,6 @@ public typealias אַקסל_מאַרקן = AxisMarks
 public typealias אַקסל_גריד_ליניע = AxisGridLine
 public typealias אַקסל_טיק_מאַרק = AxisTick
 public typealias אַקסל_עטיקעט = AxisValueLabel
+
+// MARK: - Protocol/parameter mappings for Charts
+// mapping: ווערט = value

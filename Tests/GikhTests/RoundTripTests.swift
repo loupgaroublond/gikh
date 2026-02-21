@@ -93,17 +93,18 @@ struct RoundTripBToCToBTests {
         #expect(stripped1 == stripped2)
     }
 
-    @Test("B→C: keywords become English, Yiddish identifiers preserved")
+    @Test("B→C: keywords + bibliotek become English, project identifiers preserved")
     func bToCKeywordsAndIdentifiers() {
         let lexicon = makeTestLexicon()
         let modeB = "לאָז מענטש: סטרינג = \"יענקל\""
 
         let modeC = transpile(modeB, lexicon: lexicon, target: .modeC)
 
-        // Mode C: English keywords, Yiddish identifiers, no BiDi
+        // Mode C (compilation): keywords + bibliotek translated, project identifiers preserved
         #expect(modeC.contains("let"))
-        #expect(modeC.contains("מענטש"))
-        #expect(modeC.contains("סטרינג"))
+        #expect(modeC.contains("מענטש"))   // project identifier — preserved
+        #expect(modeC.contains("String"))  // bibliotek typealias — translated to English
+        #expect(!modeC.contains("סטרינג")) // Yiddish bibliotek name — translated away
         // No Yiddish keywords
         #expect(!modeC.contains("לאָז"))
         // No BiDi markers

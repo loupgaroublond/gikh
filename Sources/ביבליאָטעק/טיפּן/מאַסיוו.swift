@@ -17,4 +17,18 @@ extension Array {
     @_transparent public func יעדן(_ טוען: (Element) throws -> Void) rethrows { try forEach(טוען) }
     @_transparent public mutating func אויסמעקן_לעצטן() -> Element { removeLast() }
     @_transparent public func צוגעפּאָרט() -> EnumeratedSequence<[Element]> { enumerated() }
+
+    // Prefix N elements
+    @_alwaysEmitIntoClient
+    public func ערשטע(_ צאָל: Int) -> ArraySlice<Element> {
+        self.prefix(צאָל)
+    }
+}
+
+import Foundation // For IndexSet
+extension Array {
+    @_alwaysEmitIntoClient
+    public mutating func אויסמעקן(בײַ_אינדעקסן: IndexSet) {
+        remove(atOffsets: בײַ_אינדעקסן)
+    }
 }

@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "fix-pkg-identity",
+    name: "gikh",
     platforms: [
         .macOS(.v14),
     ],

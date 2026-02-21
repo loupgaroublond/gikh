@@ -124,6 +124,15 @@ extension View {
         self.textFieldStyle(סטיל)
     }
 
+    // Frame convenience overloads
+    @_transparent public func ראַמען(הייך: CGFloat? = nil) -> some View {
+        self.frame(height: הייך)
+    }
+
+    @_transparent public func ראַמען(מאַקס_ברייט: CGFloat) -> some View {
+        self.frame(maxWidth: מאַקס_ברייט)
+    }
+
     // Swipe actions
     @_transparent public func וויש_אַקציעס<אינהאַלט: View>(עקן: HorizontalEdge = .trailing, לאָזן_פֿול_וויש: Bool = true, @ViewBuilder _ אינהאַלט_בויער: () -> אינהאַלט) -> some View {
         self.swipeActions(edge: עקן, allowsFullSwipe: לאָזן_פֿול_וויש, content: אינהאַלט_בויער)

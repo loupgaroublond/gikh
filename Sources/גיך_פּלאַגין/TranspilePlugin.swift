@@ -17,6 +17,11 @@ struct TranspilePlugin: BuildToolPlugin {
             file.url.pathExtension == "gikh"
         }
 
+        // Resolve the ביבליאָטעק source directory relative to the package root
+        let bibliotekPath = context.package.directoryURL
+            .appending(path: "Sources/ביבליאָטעק")
+            .path(percentEncoded: false)
+
         return gikhFiles.map { file in
             let inputURL = file.url
             let outputFileName = inputURL.deletingPathExtension()
@@ -29,6 +34,7 @@ struct TranspilePlugin: BuildToolPlugin {
                 arguments: [
                     inputURL.path(percentEncoded: false),
                     outputURL.path(percentEncoded: false),
+                    bibliotekPath,
                 ],
                 inputFiles: [inputURL],
                 outputFiles: [outputURL]

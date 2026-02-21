@@ -1,4 +1,4 @@
-import SwiftUI
+@_exported import SwiftUI
 
 // MARK: - Core View Protocol
 public typealias בליק = View
@@ -103,3 +103,76 @@ extension Label where Title == Text, Icon == Image {
         self.init(טיטל, systemImage: סיסטעם_בילד)
     }
 }
+
+// MARK: - VStack Yiddish init (alignment:/spacing:/content: → אויסריכטונג:/אָפּשטאַנד:/אינהאַלט:)
+extension VStack {
+    @_transparent public init(אויסריכטונג: HorizontalAlignment = .center, אָפּשטאַנד: CGFloat? = nil, @ViewBuilder אינהאַלט: () -> Content) {
+        self.init(alignment: אויסריכטונג, spacing: אָפּשטאַנד, content: אינהאַלט)
+    }
+}
+
+// MARK: - HStack Yiddish init (alignment:/spacing:/content: → אויסריכטונג:/אָפּשטאַנד:/אינהאַלט:)
+extension HStack {
+    @_transparent public init(אויסריכטונג: VerticalAlignment = .center, אָפּשטאַנד: CGFloat? = nil, @ViewBuilder אינהאַלט: () -> Content) {
+        self.init(alignment: אויסריכטונג, spacing: אָפּשטאַנד, content: אינהאַלט)
+    }
+}
+
+// MARK: - NavigationLink Yiddish init (destination:/label: → ציל:/לאַבל:)
+extension NavigationLink {
+    @_transparent public init(ציל: @autoclosure @escaping () -> Destination, @ViewBuilder לאַבל: () -> Label) {
+        self.init(destination: ציל, label: לאַבל)
+    }
+}
+
+// MARK: - ToolbarItemPlacement Yiddish values
+extension ToolbarItemPlacement {
+    @_transparent public static var הויפּט_אַקציע: ToolbarItemPlacement { .primaryAction }
+    @_transparent public static var ביטול_אַקציע: ToolbarItemPlacement { .cancellationAction }
+    @_transparent public static var באַשטעטיקונג_אַקציע: ToolbarItemPlacement { .confirmationAction }
+    @_transparent public static var אויטאָמאַטיש: ToolbarItemPlacement { .automatic }
+    #if os(iOS) || os(visionOS)
+    @_transparent public static var נאַוויגאַציע_שטאַנגע_טרעילינג: ToolbarItemPlacement { .navigationBarTrailing }
+    #endif
+}
+
+// MARK: - Font Yiddish values
+extension Font {
+    @_transparent public static var קעפּל: Font { .headline }
+    @_transparent public static var אונטערשריפֿט: Font { .caption }
+    @_transparent public static var גרויסער_טיטל: Font { .largeTitle }
+    @_transparent public static var גוף: Font { .body }
+    @_transparent public static var טיטל_שריפֿט: Font { .title }
+    @_transparent public static var טיטל2: Font { .title2 }
+    @_transparent public static var טיטל3: Font { .title3 }
+    @_transparent public static var פֿוסנאָטע: Font { .footnote }
+    @_transparent public static var אונטערקעפּל: Font { .subheadline }
+}
+
+// MARK: - HorizontalAlignment Yiddish values
+extension HorizontalAlignment {
+    @_transparent public static var אָנהייב: HorizontalAlignment { .leading }
+    @_transparent public static var סוף: HorizontalAlignment { .trailing }
+    @_transparent public static var מיטן: HorizontalAlignment { .center }
+}
+
+// MARK: - VerticalAlignment Yiddish values
+extension VerticalAlignment {
+    @_transparent public static var אויבן: VerticalAlignment { .top }
+    @_transparent public static var אונטן: VerticalAlignment { .bottom }
+    @_transparent public static var מיטן: VerticalAlignment { .center }
+}
+
+// MARK: - Edge.Set Yiddish values
+extension Edge.Set {
+    @_transparent public static var אונטן: Edge.Set { .bottom }
+    @_transparent public static var אויבן: Edge.Set { .top }
+}
+
+// MARK: - Protocol method mappings
+// SwiftUI View protocol
+// mapping: גוף = body
+// Identifiable protocol
+// mapping: קענונג = id
+// SwiftUI parameter labels
+// mapping: עטיקעט_צ = label

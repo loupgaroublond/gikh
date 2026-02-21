@@ -1,4 +1,4 @@
-import ArgumentParser
+@_exported import ArgumentParser
 
 // MARK: - Core protocol typealiases
 public typealias פּארסירבאַרע_באַפֿעל = ParsableCommand
@@ -64,3 +64,9 @@ extension ArgumentHelp {
 
 // MARK: - NameSpecification
 public typealias נאָמען_שפּעציפֿיקאַציע = NameSpecification
+
+// MARK: - Protocol method mappings
+// ParsableCommand protocol
+// mapping: לויפֿן = run
+// mapping: קאָנפֿיגוראַציע = configuration
+// mapping: הילף = help

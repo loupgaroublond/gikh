@@ -1,4 +1,4 @@
-import Foundation
+@_exported import Foundation
 
 public typealias אַדרעס = URL
 
@@ -13,4 +13,9 @@ extension URL {
     @_transparent public var אָן_לעצטע_קאָמפּאָנענטע: URL { deletingLastPathComponent() }
     @_transparent public var אָן_ספֿח: URL { deletingPathExtension() }
     @_transparent public var וועג: String { path }
+
+    @_alwaysEmitIntoClient
+    public init(טעקע_וועג: String) {
+        self.init(fileURLWithPath: טעקע_וועג)
+    }
 }

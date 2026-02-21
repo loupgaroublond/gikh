@@ -131,8 +131,12 @@ public enum TargetMode {
 
 /// Which dictionaries are active during translation.
 public enum TranslationMode {
-    /// Keywords only (B ↔ C compiler workflow).
+    /// Keywords only.
     case keywordsOnly
+    /// Keywords + bibliotek identifiers (B → C compiler workflow).
+    /// Translates protocol method names, parameter labels, and framework
+    /// wrappers back to English, but preserves project identifiers in Yiddish.
+    case compilation
     /// All dictionaries (A ↔ B developer workflow).
     case full
 }

@@ -40,11 +40,15 @@ public enum Transpiler {
             return annotator.annotate(translated, target: .modeA)
 
         case .modeC:
-            // Target Mode C: swap Yiddish keywords → English (keywords only), strip BiDi
+            // Target Mode C: swap Yiddish → English (keywords + bibliotek identifiers)
+            // Bibliotek identifiers must be translated so that protocol method names,
+            // parameter labels, and other framework-required names resolve correctly.
+            // Type aliases and wrapper names also translate back to their English
+            // originals, which is safe because the English APIs exist via @_exported import.
             let translator = Translator(
                 lexicon: lexicon,
                 direction: .toEnglish,
-                mode: .keywordsOnly
+                mode: .compilation
             )
             let translated = translator.translate(tokens)
             return annotator.annotate(translated, target: .modeC)

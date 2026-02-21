@@ -1,4 +1,4 @@
-import SwiftData
+@_exported import SwiftData
 import SwiftUI
 import Foundation
 
@@ -13,6 +13,9 @@ public typealias ברענג_באַשרײַבונג = FetchDescriptor
 public typealias סאָרטיר_באַשרײַבונג = SortDescriptor
 public typealias מאָדעל_קאָנפֿיגוראַציע = ModelConfiguration
 public typealias מאָדעל_שעמע = Schema
+
+// Note: @Query is a SwiftData macro — cannot be typealiased.
+// Use @Query directly in Mode B .gikh files.
 
 // MARK: - ModelContainer convenience initializer
 extension ModelContainer {
@@ -85,3 +88,11 @@ extension Scene {
         self.modelContainer(for: סאָרט)
     }
 }
+
+// MARK: - Protocol/macro mappings
+// @Model and @Query macro names (used after @ in source)
+// mapping: מאָדעל = Model
+// mapping: שאילתּא = Query
+// @Query parameter labels
+// mapping: סאָרטירן = sort
+// mapping: מאָדעל_קאָנטעקסט = modelContext
